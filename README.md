@@ -24,6 +24,6 @@ Results (both data and plots) are also stored on the cluster, or can be easily g
 ## Code
 All code used for the analyses is provided at: 
 
-[https://github.com/mdelcorvo/DeSeq-Free](https://github.com/mdelcorvo/DeSeq-Free) (branches: master, see README for usage details)
+* [https://github.com/mdelcorvo/DeSeq-Free](https://github.com/mdelcorvo/DeSeq-Free) (branches: master, see README for usage details)
 
-[scripts] directory(./scripts/)
+* [scripts](./scripts/) directory
