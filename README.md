@@ -7,8 +7,7 @@ This repo provides details to understand and  reproduce all the analyses done fo
 - [Contents](#contents)
 - [Data](#data)
 - [Code](#code)
-- [WGS](#wgs)
-- [WES](#wes)
+- [Analysis](#analysis)
 
 ## Data
 Raw data used for the analyses are stored on the cluster. 
@@ -30,6 +29,8 @@ All code used for the analyses is provided at:
 
 * [scripts](./scripts/) directory
 
-## WGS
+## Analysis
 
-## WES
+* Low-pass WGS analysis
+
+* WES
