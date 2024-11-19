@@ -12,6 +12,8 @@ This repo provides details to understand and  reproduce all the analyses done fo
 ## Data
 Raw data used for the analyses are stored on the cluster. 
 
+<img src="img/samples_table.png" width="500" />
+
 **1. Low-pass WGS (Plasma-Tumor-Control samples)**
 ```
 cd /hpcnfs/techunits/genomics/PublicData/PelicciG/sfaletti/FASTQ/230919_A00302_0562_BHJ7C3DRX3
