@@ -1,5 +1,5 @@
 # Liquid Biopsy Project
-edited by Marcello Del Corvo
+edited by [Marcello Del Corvo](mailto:marcello.delcorvo@gmail.com)
 
 This repo provides details to understand and  reproduce all the analyses done for the <i> Pelicci G. et al. </i>  liquid biopsy project
 
