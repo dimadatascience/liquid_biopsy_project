@@ -26,4 +26,4 @@ All code used for the analyses is provided at:
 
 [https://github.com/mdelcorvo/DeSeq-Free](https://github.com/mdelcorvo/DeSeq-Free) (branches: master, see README for usage details)
 
-The [scripts](./scripts/)
+[scripts] directory(./scripts/)
