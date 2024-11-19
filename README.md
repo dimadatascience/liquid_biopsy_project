@@ -12,7 +12,7 @@ This repo provides details to understand and  reproduce all the analyses done fo
 ## Data
 Raw data used for the analyses are stored on the cluster. 
 
-We performed low-pass WGS analysis of plasma (cfDNA + evDNA) from ***6 GBM patients*** and their corresponding  tumor and healty control (buffy coat).
+We performed low-pass WGS analysis of plasma (cfDNA + evDNA) from ***6 GBM patients*** and their corresponding tumor samples and healty control (buffy coat).
 
 With exception of ***C2-57*** patient, all samples have been also sequencing with WES for tumor and control tissue
 
