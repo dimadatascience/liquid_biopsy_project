@@ -31,6 +31,12 @@ All code used for the analyses is provided at:
 
 ## Analysis
 
-* Low-pass WGS analysis
+1) Low-pass WGS analysis
+* Input data:
+* Code:
+* Results:
 
-* WES
+2) WES analysis
+* Input data:
+* Code:
+* Results:
