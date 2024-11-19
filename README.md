@@ -4,8 +4,8 @@ edited by [Marcello Del Corvo](mailto:marcello.delcorvo@gmail.com)
 This repo provides details to understand and  reproduce all the analyses done for the <i> Pelicci G. et al. </i>  liquid biopsy project
 
 ## Contents
+- [Contents](#contents)
 - [Sample collection](#contents)
-- [Data](#data)
 - [Code](#code)
 - [Analysis](#analysis)
 
