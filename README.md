@@ -5,7 +5,7 @@ This repo provides details to understand and  reproduce all the analyses done fo
 
 ## Contents
 - [Contents](#contents)
-- [Sample collection](#sample_collection)
+- [Sample collection](#sample-collection)
 - [Code](#code)
 - [Analysis](#analysis)
 
