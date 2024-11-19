@@ -14,7 +14,7 @@ Raw data used for the analyses are stored on the cluster.
 
 **1. Low-pass WGS (Plasma-Tumor-Control samples)**
 ```
-
+cd /hpcnfs/techunits/genomics/PublicData/PelicciG/sfaletti/FASTQ/230919_A00302_0562_BHJ7C3DRX3
 ```
 **2. WES (Tumor-Control samples)**
 ```
