@@ -7,6 +7,8 @@ This repo provides details to understand and  reproduce all the analyses done fo
 - [Contents](#contents)
 - [Data](#data)
 - [Code](#code)
+- [WGS analysis](#wgs)
+- [WES analysis](#wes)
 
 ## Data
 Raw data used for the analyses are stored on the cluster. 
@@ -27,3 +29,7 @@ All code used for the analyses is provided at:
 * [https://github.com/mdelcorvo/DeSeq-Free](https://github.com/mdelcorvo/DeSeq-Free) (branches: master, see README for usage details)
 
 * [scripts](./scripts/) directory
+
+## WGS analysis
+
+## WES analysis
