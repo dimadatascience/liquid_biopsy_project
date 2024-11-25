@@ -1,0 +1,17 @@
+## Sequencing Report
+File names:
+    - Read1: /data/delcorvo/analysis/liquid_biopsy_project/derived_data/pre_processing/final/{sample_type}-paired.R1.fastq.gz
+    - Read2: /data/delcorvo/analysis/liquid_biopsy_project/derived_data/pre_processing/final/{sample_type}-paired.R2.fastq.gz
+Sample: H7-plasma
+File type: FASTQ
+Encoding: Illumina Basecalls
+Total reads: 49348778
+Read1: 24674389
+Read2: 24674389
+Mean read length: 134-130
+Insert size peak: 145
+GC content [%]: 43.7
+Basecalls with Q>20 [%]: 99.59
+Basecalls with Q>30 [%]: 97.46
+Low quality reads [%]: 0.0
+Duplicated reads [%]: 10.1

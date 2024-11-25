@@ -1,0 +1,17 @@
+## Sequencing Report
+File names:
+    - Read1: /data/delcorvo/analysis/liquid_biopsy_project/derived_data/pre_processing/final/{sample_type}-paired.R1.fastq.gz
+    - Read2: /data/delcorvo/analysis/liquid_biopsy_project/derived_data/pre_processing/final/{sample_type}-paired.R2.fastq.gz
+Sample: H8-tumor
+File type: FASTQ
+Encoding: Illumina Basecalls
+Total reads: 52867648
+Read1: 26433824
+Read2: 26433824
+Mean read length: 135-126
+Insert size peak: 145
+GC content [%]: 42.36
+Basecalls with Q>20 [%]: 99.54
+Basecalls with Q>30 [%]: 97.23
+Low quality reads [%]: 0.0
+Duplicated reads [%]: 2.82
