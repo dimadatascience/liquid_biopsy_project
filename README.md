@@ -11,7 +11,7 @@ This repo provides details to understand and  reproduce all the analyses done fo
 
 ## Sample collection
 
-We performed low-pass WGS analysis of plasma (cfDNA + evDNA) from [***6 GBM patients***](./metafile/GBM_low-pass_WGS_samples.xlsx)  and their corresponding tumor samples and healty control (buffy coat).
+We performed low-pass WGS analysis of plasma (cfDNA + evDNA) from [***6 GBM patients***](./metafile/keys_sample_sequencing_ID.xlsx)  and their corresponding tumor samples and healty control (buffy coat).
 
 With exception of ***C2-57*** patient, all samples have been also sequencing with WES for tumor and control tissue
 
