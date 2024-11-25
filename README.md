@@ -99,13 +99,13 @@ At the surface level, the analyses can be broadly grouped into these sections:
       
     - sequencing stats:
 
-      [samtools_stats](.results/qc/samtools_stats/) directory
+      [samtools_stats](./results/qc/samtools_stats/) directory
       
-      [fastp_stats](.results/qc/fastp/) directory
+      [fastp_stats](./results/qc/fastp/) directory
 
     - fragmentomics metrics:
    
-       [cfDNAPro](.results/qc/fragmentomics/) directory
+       [cfDNAPro](./results/qc/fragmentomics/) directory
       
        <img src="results/qc/fragmentomics/fragment_size_dist.png" width="700"/>
         
