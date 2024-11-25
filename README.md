@@ -45,7 +45,7 @@ At the surface level, the analyses can be broadly grouped into these sections:
 
 <h3>Low-pass WGS</h3>
   
-[Input_file](./metafile/GBM_low-pass_WGS_samples.xlsx)
+* Input: [metafile](./metafile/GBM_low-pass_WGS_samples.xlsx)
   
   a samplesheet  (can be .xlsx or .csv) with raw fastq.gz data that looks as follows:
   ```
@@ -53,10 +53,45 @@ At the surface level, the analyses can be broadly grouped into these sections:
   
   E06, lane1, S52505_B-E06_S16_L001_R1_001.fastq.gz, S52505_B-E06_S16_L001_R2_001.fastq.gz, 0
   ```
-Each row represents a single-end fastq file. Rows with the same sample identifier are considered technical replicates and will be automatically merged. ``` type ``` refers to sample type (0= buffy coat, 1= plasma, 2=tumor).
- 
+  Each row represents a single-end fastq file. Rows with the same sample identifier are considered technical replicates and will be automatically merged. ``` type ``` refers to sample type (0=
+  buffy coat, 1= plasma, 2=tumor).
+
+  - Reference genome<br />
+   
+    Before starting, a user need to download reference genome. 
+
+    Download from [NCBI](https://www.ncbi.nlm.nih.gov/genome/guide/human/), [Ensembl](https://ftp.ensembl.org/pub/current_fasta/homo_sapiens/dna/), or any other autorities
+    ```
+    wget https://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.toplevel.fa.gz
+    ```
+    
+    - Index reference genome for bwa-mem2<br />
+  
+      Prepare indexed genome for bwa-mem2 to boost mapping.  Refer to the [bwa-mem2 instruction](https://github.com/bwa-mem2/bwa-mem2).<br />
+    - Example code:
+      ```
+      ./bwa-mem2 index <in.fasta>
+      Where 
+      <in.fasta> is the path to reference sequence fasta file and 
+      ```
+      
 * Code:
-* Results:
+
+  ```
+  git clone https://github.com/mdelcorvo/DeSeq-Free.git
+  cd DeSeq-Free && conda env create -f envs/workflow.yaml
+  conda activate DeSeq-Free_workflow
+
+  snakemake --use-conda \
+  --config \
+  input=inputfile.xlsx \
+  output=output_directory \
+  genome=genome.fasta
+  ```
+  
+- Results:
+  
+  - Quality control
 
 2) WES analysis
 * Input data:
