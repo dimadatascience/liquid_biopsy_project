@@ -1,0 +1,5 @@
+E27T1-B,/hpcnfs/techunits/genomics/PublicData/Mazzarella/gfrige/FASTQ/230829_A00302_0558_BH2K7GDSX3/,E27T1-T,/hpcnfs/techunits/genomics/PublicData/Mazzarella/gfrige/FASTQ/230829_A00302_0558_BH2K7GDSX3/
+E23T1-B,/hpcnfs/techunits/genomics/PublicData/Mazzarella/gfrige/FASTQ/230829_A00302_0558_BH2K7GDSX3/,E23T1-T,/hpcnfs/techunits/genomics/PublicData/Mazzarella/gfrige/FASTQ/230829_A00302_0558_BH2K7GDSX3/
+E06T1_B,/hpcnfs/techunits/genomics/PublicData/Dima/gfrige/FASTQ/230601_A00302_0533_BH2JY7DSX3,E06T1_T,/hpcnfs/techunits/genomics/PublicData/Dima/gfrige/FASTQ/230601_A00302_0533_BH2JY7DSX3
+H8_B,/hpcnfs/techunits/genomics/PublicData/Dima/gfrige/FASTQ/241031_A00302_0673_AHVVTNDSXC,H8_T,/hpcnfs/techunits/genomics/PublicData/Dima/gfrige/FASTQ/241031_A00302_0673_AHVVTNDSXC
+H7_B,/hpcnfs/techunits/genomics/PublicData/Dima/gfrige/FASTQ/241031_A00302_0673_AHVVTNDSXC,H7_T,/hpcnfs/techunits/genomics/PublicData/Dima/gfrige/FASTQ/241031_A00302_0673_AHVVTNDSXC
