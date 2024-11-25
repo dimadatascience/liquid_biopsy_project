@@ -68,7 +68,8 @@ At the surface level, the analyses can be broadly grouped into these sections:
     - Index reference genome for bwa-mem2<br />
   
       Prepare indexed genome for bwa-mem2 to boost mapping.  Refer to the [bwa-mem2 instruction](https://github.com/bwa-mem2/bwa-mem2).<br />
-    - Example code:
+      
+      Example code:
       ```
       ./bwa-mem2 index <in.fasta>
       Where 
@@ -92,7 +93,14 @@ At the surface level, the analyses can be broadly grouped into these sections:
 - Results:
   
   - Quality control
+    
+  - sCNA
 
+  All results are also stored in the cluster at:
+  ```
+  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/wgs
+  ```
+  
 2) WES analysis
 * Input data:
 * Code:
