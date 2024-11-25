@@ -97,7 +97,18 @@ At the surface level, the analyses can be broadly grouped into these sections:
       
       <img src="results/qc/coverage/mosdepth.dist.png" width="700"/>
       
-    
+    - sequencing stats:
+
+      [samtools_stats](.results/qc/samtools_stats/) directory
+      
+      [fastp_stats](.results/qc/fastp/) directory
+
+    - fragmentomics metrics:
+   
+       [cfDNAPro](.results/qc/fragmentomics/) directory
+      
+       <img src="results/qc/fragmentomics/fragment_size_dist.png" width="700"/>
+        
   - sCNA
 
   All results are also stored in the cluster at:
