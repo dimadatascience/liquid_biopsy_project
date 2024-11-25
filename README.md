@@ -93,6 +93,9 @@ At the surface level, the analyses can be broadly grouped into these sections:
 - Results:
   
   - Quality control
+    - coverage: 
+      <img src="results/qc/coverage/mosdepth.dist.tiff" width="500" />
+      
     
   - sCNA
 
