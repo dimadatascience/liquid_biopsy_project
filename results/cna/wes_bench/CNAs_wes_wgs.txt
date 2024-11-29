@@ -1,0 +1,6 @@
+Sample	Match	Match_perc
+wes/dragen_call/E06	45	70.31
+wes/dragen_call/E23	13	100
+wes/dragen_call/E27	48	97.96
+wes/dragen_call/H7	15	75
+wes/dragen_call/H8	10	50
