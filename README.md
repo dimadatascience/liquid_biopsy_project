@@ -132,7 +132,10 @@ At the surface level, the analyses can be broadly grouped into these sections:
   - CNAs
 
     [CNAs](./results/cna/) directory
+    
+ - CNAs comparison
 
+    [CNAs](./results/cna/comparison/) directory
   
     
   All results are also stored on cluster:
