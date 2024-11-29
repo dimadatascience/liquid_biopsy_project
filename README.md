@@ -109,9 +109,9 @@ At the surface level, the analyses can be broadly grouped into these sections:
       
        <img src="results/qc/fragmentomics/fragment_size_dist.png" width="700"/>
         
-  - sCNA
+  - CNAs
 
-    [cna](./results/cna/) directory
+    [CNAs](./results/cna/) directory
 
   - plasma - tumor CNAs comparions
  
@@ -127,6 +127,7 @@ At the surface level, the analyses can be broadly grouped into these sections:
     ```
     # example of usage
     cd /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
+    
     Rscript --vanilla scripts/low_pass_wgs_analysis.R \
     ./derived_data/cna/seg \ # input directory with IchorCNA output (.seg file)
     ./output \ # output directory
