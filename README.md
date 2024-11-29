@@ -130,18 +130,26 @@ At the surface level, the analyses can be broadly grouped into these sections:
   - CNAs
 
     [CNAs](./results/cna/) directory
+
+    On cluster:
+ 
+    ```
+    /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/derived_data/cna/seg
+    ```
     
   - CNAs comparison
 
     [CNAs comparison](./results/cna/comparison/) directory
   
+
     
   All results are also stored on cluster:
   ```
   /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
   ```
   
-2) WES analysis
+<h3>WES</h3>
+
 * Input data:
 
   [WES_CNAs call](./data/wes/raw_data_WES.txt): Dragen call on [WES Raw_data](./data/wes/raw_data_WES.txt)
