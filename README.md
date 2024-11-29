@@ -97,10 +97,8 @@ At the surface level, the analyses can be broadly grouped into these sections:
     this script can also be found on cluster:
     
     ```
-    /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/scripts
-    ```
- 
-    ```
+    /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/scripts/low_pass_wgs_analysis.R
+    
     # example of usage
     cd /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
     
