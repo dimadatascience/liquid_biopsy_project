@@ -175,6 +175,8 @@ At the surface level, the analyses can be broadly grouped into these sections:
      
 <h3>WES / WGS Benchmarking</h3>
 
+Number of CNAs in WES confirmed by low-pass WGS
+
 * Input data:
 
   [WES_CNAs call](./data/wes/): Dragen call on [WES Raw_data](./data/wes/raw_data_WES.txt)
@@ -183,4 +185,73 @@ At the surface level, the analyses can be broadly grouped into these sections:
   
   
 * Code:
+
+Filter for WES target regions
+
+```
+import pandas as pd
+# File paths
+tumor_plasma_file = "CNAs_calls.txt"
+twist_bed_file = "Twist_hg38_CORRECT.bed"
+output_file = "CNAs_calls.FILT.txt"
+
+# Load the Twist BED file
+twist_bed_df = pd.read_csv(twist_bed_file, sep="\t", header=None, names=["Chr", "Start", "End"])
+
+# Ensure Twist BED columns are numeric for efficient comparisons
+twist_bed_df["Start"] = pd.to_numeric(twist_bed_df["Start"])
+twist_bed_df["End"] = pd.to_numeric(twist_bed_df["End"])
+
+# Initialize an empty list to store filtered results
+filtered_results = []
+
+# Function to check overlap
+def find_overlaps(chunk, twist_bed):
+    overlaps = []
+    for _, row in chunk.iterrows():
+        overlapping = twist_bed[
+            (twist_bed["Chr"] == row["Chr"]) &
+            (twist_bed["Start"] < row["End"]) &
+            (twist_bed["End"] > row["Start"])
+        ]
+        if not overlapping.empty:
+            overlaps.append(row)
+    return overlaps
+
+# Read tumor plasma file in chunks for memory efficiency
+chunk_size = 5000
+with pd.read_csv(tumor_plasma_file, sep="\t", chunksize=chunk_size) as reader:
+    for chunk in reader:
+        # Ensure necessary columns are numeric
+        chunk["Start"] = pd.to_numeric(chunk["Start"], errors="coerce")
+        chunk["End"] = pd.to_numeric(chunk["End"], errors="coerce")
+        
+        # Filter overlapping regions
+        filtered_chunk = find_overlaps(chunk, twist_bed_df)
+        filtered_results.extend(filtered_chunk)
+
+# Convert results to a DataFrame
+filtered_df = pd.DataFrame(filtered_results)
+
+# Save the filtered DataFrame
+filtered_df.to_csv(output_file, index=False)
+
+print(f"Filtered overlapping regions saved to {output_file}")
+```
+
+file: [wgs_wes_bench.R](./scripts/cna/wgs_wes_bench.R)
+
+```
+/hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/wes/scripts/wgs_wes_bench.R
+
+# example of usage
+
+cd /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project
+
+Rscript --vanilla wes/scripts/wgs_wes_bench.R \
+wes/dragen_call \
+low_pass_wgs/cna_comparison/CNAs_calls.FILT.txt \
+wes_wgs_comparison
+```
+
 * Results:
