@@ -177,6 +177,14 @@ At the surface level, the analyses can be broadly grouped into these sections:
 
 Number of CNAs in WES confirmed by low-pass WGS
 
+  WGS/WES comparison
+  
+  CNAs were considered valid if:
+  
+    - overlap ≥ 50% between wgs and wes call
+    - must be same type (e.g. duplication- duplication, deletion - deletion)
+
+
 * Input data:
 
   [WES_CNAs call](./data/wes/): Dragen call on [WES Raw_data](./data/wes/raw_data_WES.txt)
@@ -255,3 +263,10 @@ wes_wgs_comparison
 ```
 
 * Results:
+
+- [wes_wgs_benchmarking](./results/cna/wes_bench/)
+ 
+  ```
+  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/wes_wgs_comparison
+  ```
+  
