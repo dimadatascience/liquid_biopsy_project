@@ -109,7 +109,7 @@ At the surface level, the analyses can be broadly grouped into these sections:
     
   - <b>fragment analysis</b>
 
-    file: [low_pass_wgs_analysis.R](./scripts/fragmentomics/fragment_size_distribution.py)
+    file: [fragment_size_distribution.py](./scripts/fragmentomics/fragment_size_distribution.py)
     
     ```
     /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/scripts/fragment_size_distribution.py
