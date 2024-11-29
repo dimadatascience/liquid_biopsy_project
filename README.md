@@ -113,7 +113,7 @@ At the surface level, the analyses can be broadly grouped into these sections:
 
   All results are also stored in the cluster at:
   ```
-  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/wgs
+  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
   ```
   
 2) WES analysis
