@@ -90,9 +90,9 @@ At the surface level, the analyses can be broadly grouped into these sections:
   genome=genome.fasta
   ```
 
-  - plasma - tumor CNAs comparions
+  - <b>plasma - tumor CNAs comparions</b>
  
-    [low_pass_wgs_analysis](./scripts/cna/low_pass_wgs_analysis.R)
+    file: [low_pass_wgs_analysis.R](./scripts/cna/low_pass_wgs_analysis.R)
  
     this script can also be found on cluster:
     
@@ -100,7 +100,6 @@ At the surface level, the analyses can be broadly grouped into these sections:
     /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/scripts
     ```
  
-    
     ```
     # example of usage
     cd /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
