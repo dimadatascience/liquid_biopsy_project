@@ -94,7 +94,6 @@ At the surface level, the analyses can be broadly grouped into these sections:
  
     file: [low_pass_wgs_analysis.R](./scripts/cna/low_pass_wgs_analysis.R)
  
-    this script can also be found on cluster:
     
     ```
     /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/scripts/low_pass_wgs_analysis.R
@@ -106,6 +105,23 @@ At the surface level, the analyses can be broadly grouped into these sections:
     ./derived_data/cna/seg \ # input directory with IchorCNA output (.seg file)
     ./output \ # output directory
     ./derived_data/cna/canonical_exon_transcripts_hg38.bed # Gene annotation (.bed)
+    ```
+    
+  - <b>fragment analysis</b>
+
+    file: [low_pass_wgs_analysis.R](./scripts/fragmentomics/fragment_size_distribution.py)
+    
+    ```
+    /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/scripts/fragment_size_distribution.py
+    
+    # example of usage
+    cd /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
+    
+    python scripts/fragment_size_distribution.py \
+    --plasma_bam_list ./derived_data/recal/plasma_list.txt \
+    --tumor_bam_list ./derived_data/recal/tumor_list.txt  \
+    --output_csv derived_data/fragmentomics/gbm_fr.csv \
+    --output_plot derived_data/fragmentomics/gbm_fr.png
     ```
   
 - Results:
@@ -148,7 +164,8 @@ At the surface level, the analyses can be broadly grouped into these sections:
   - [CNAs comparison](./results/cna/comparison/)
 
 
-
+  - [Fragmentomics](./results/fragmentomics/)
+ 
   
 <h3>WES / WGS Benchmarking</h3>
 
