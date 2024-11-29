@@ -89,6 +89,27 @@ At the surface level, the analyses can be broadly grouped into these sections:
   output=output_directory \
   genome=genome.fasta
   ```
+
+  - plasma - tumor CNAs comparions
+ 
+    [low_pass_wgs_analysis](./scripts/cna/low_pass_wgs_analysis.R)
+ 
+    this script can also be found on cluster:
+    
+    ```
+    /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/scripts
+    ```
+ 
+    
+    ```
+    # example of usage
+    cd /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
+    
+    Rscript --vanilla scripts/low_pass_wgs_analysis.R \
+    ./derived_data/cna/seg \ # input directory with IchorCNA output (.seg file)
+    ./output \ # output directory
+    ./derived_data/cna/canonical_exon_transcripts_hg38.bed # Gene annotation (.bed)
+    ```
   
 - Results:
   
@@ -113,26 +134,7 @@ At the surface level, the analyses can be broadly grouped into these sections:
 
     [CNAs](./results/cna/) directory
 
-  - plasma - tumor CNAs comparions
- 
-    [low_pass_wgs_analysis](./scripts/low_pass_wgs_analysis.R) directory
- 
-    this script can also be found on cluster:
-    
-    ```
-    /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/scripts
-    ```
- 
-    
-    ```
-    # example of usage
-    cd /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
-    
-    Rscript --vanilla scripts/low_pass_wgs_analysis.R \
-    ./derived_data/cna/seg \ # input directory with IchorCNA output (.seg file)
-    ./output \ # output directory
-    ./derived_data/cna/canonical_exon_transcripts_hg38.bed # Gene annotation (.bed)
-    ```
+  
     
   All results are also stored on cluster:
   ```
