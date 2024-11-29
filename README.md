@@ -151,7 +151,7 @@ At the surface level, the analyses can be broadly grouped into these sections:
 
 * Input data:
 
-  [WES_CNAs call](./data/wes/raw_data_WES.txt): Dragen call on [WES Raw_data](./data/wes/raw_data_WES.txt)
+  [WES_CNAs call](./data/wes/): Dragen call on [WES Raw_data](./data/wes/raw_data_WES.txt)
   
 * Code:
 * Results:
