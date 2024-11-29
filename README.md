@@ -157,21 +157,21 @@ At the surface level, the analyses can be broadly grouped into these sections:
       
   - [CNAs](./results/cna/)
  
-    ```
-    /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/derived_data/cna/seg
-    ```
+  ```
+  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/derived_data/cna/seg
+  ```
     
   - [CNAs comparison](./results/cna/comparison/)
     
-    ```
-    /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/cna_comparison
-    ```
+  ```
+  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/cna_comparison
+  ```
 
   - [Fragmentomics](./results/fragmentomics/)
  
-     ```
-    /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/derived_data/fragmentomics
-    ```
+  ```
+  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/derived_data/fragmentomics
+  ```
      
 <h3>WES / WGS Benchmarking</h3>
 
