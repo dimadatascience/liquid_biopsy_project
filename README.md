@@ -173,7 +173,7 @@ At the surface level, the analyses can be broadly grouped into these sections:
 
   [WES_CNAs call](./data/wes/): Dragen call on [WES Raw_data](./data/wes/raw_data_WES.txt)
 
-  [WGS tumor - plasma comparison](./results/cna/comparison/CNAs_calls.txt):
+  [WGS tumor - plasma comparison](./results/cna/comparison/CNAs_calls.txt)
   
   
 * Code:
