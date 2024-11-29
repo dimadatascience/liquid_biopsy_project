@@ -109,7 +109,12 @@ At the surface level, the analyses can be broadly grouped into these sections:
     ```
   
 - Results:
-  
+
+  All results are always stored also on cluster:
+  ```
+  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
+  ```
+
   - Quality control
     - coverage:
       
@@ -140,13 +145,7 @@ At the surface level, the analyses can be broadly grouped into these sections:
   - CNAs comparison
 
     [CNAs comparison](./results/cna/comparison/) directory
-  
 
-    
-  All results are also stored on cluster:
-  ```
-  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
-  ```
   
 <h3>WES</h3>
 
