@@ -176,8 +176,6 @@ At the surface level, the analyses can be broadly grouped into these sections:
 <h3>WES / WGS Benchmarking</h3>
 
 Number of CNAs in WES confirmed by low-pass WGS
-
-  WGS/WES comparison
   
   CNAs were considered valid if:
   
