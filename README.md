@@ -111,6 +111,8 @@ At the surface level, the analyses can be broadly grouped into these sections:
         
   - sCNA
 
+    [cna](./results/cna/) directory
+    
   All results are also stored in the cluster at:
   ```
   /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs
