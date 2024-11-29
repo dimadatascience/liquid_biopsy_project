@@ -116,35 +116,38 @@ At the surface level, the analyses can be broadly grouped into these sections:
   ```
 
   - Quality control
-    - coverage:
-      
+  
+      - coverage:
+
       <img src="results/qc/coverage/mosdepth.dist.png" width="700"/>
       
-    - sequencing stats:
-
-      [samtools_stats](./results/qc/samtools_stats/) directory
+      - sequencing stats:
+        [samtools_stats](./results/qc/samtools_stats/) directory
       
-      [fastp_stats](./results/qc/fastp/) directory
+        [fastp_stats](./results/qc/fastp/) directory
 
-    - fragmentomics metrics:
+      - fragmentomics metrics:
    
-       [cfDNAPro](./results/qc/fragmentomics/) directory
+         [cfDNAPro](./results/qc/fragmentomics/) directory
       
-       <img src="results/qc/fragmentomics/fragment_size_dist.png" width="700"/>
-        
-  - CNAs
+         <img src="results/qc/fragmentomics/fragment_size_dist.png" width="700"/>
 
-    [CNAs](./results/cna/) directory
-
-    On cluster:
+  - Alignment files
+ 
+  ```
+  /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/derived_data/recal
+  
+  ```
+      
+  - [CNAs](./results/cna/)
  
     ```
     /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/low_pass_wgs/derived_data/cna/seg
     ```
     
-  - CNAs comparison
+  - [CNAs comparison](./results/cna/comparison/)
 
-    [CNAs comparison](./results/cna/comparison/) directory
+
 
   
 <h3>WES</h3>
