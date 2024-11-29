@@ -131,9 +131,9 @@ At the surface level, the analyses can be broadly grouped into these sections:
 
     [CNAs](./results/cna/) directory
     
- - CNAs comparison
+  - CNAs comparison
 
-    [CNAs](./results/cna/comparison/) directory
+    [CNAs comparison](./results/cna/comparison/) directory
   
     
   All results are also stored on cluster:
@@ -143,5 +143,8 @@ At the surface level, the analyses can be broadly grouped into these sections:
   
 2) WES analysis
 * Input data:
+
+  [WES_CNAs call](./data/wes/raw_data_WES.txt): Dragen call on [WES Raw_data](./data/wes/raw_data_WES.txt)
+  
 * Code:
 * Results:
