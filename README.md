@@ -262,7 +262,7 @@ wes_wgs_comparison
 
 * Results:
 
-- [wes_wgs_benchmarking](./results/cna/wes_bench/)
+  - [wes_wgs_benchmarking](./results/cna/wes_bench/)
  
   ```
   /hpcnfs/scratch/DIMA/delcorvo/liquid_biobsy_project/wes_wgs_comparison
