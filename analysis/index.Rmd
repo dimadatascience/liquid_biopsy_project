@@ -1,0 +1,15 @@
+---
+title: "Home"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+This  website contains copy number variation analysis for the project in collaboration with G. Pelicci group
+
+# AML patients from Chiara
+
+- [1-Exploratory analysis and malignant cell annotation](00_malignant_non_malignant_annotations.html)

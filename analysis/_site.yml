@@ -1,0 +1,19 @@
+name: "phenotype_genotype"
+output_dir: ../docs
+navbar:
+  title: "scmseq"
+  left:
+  - text: Home
+    href: index.html
+  - text: About
+    href: about.html
+  right:
+  - icon: fa-github
+    href: https://www.research.ieo.it/research-and-technology/technological-units/data-science-unit/
+output:
+  workflowr::wflow_html:
+    toc: yes
+    toc_float: yes
+    code_folding: show
+    theme: flatly
+    highlight: textmate
