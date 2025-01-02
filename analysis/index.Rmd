@@ -12,4 +12,4 @@ This  website contains copy number variation analysis for the project in collabo
 
 # AML patients from Chiara
 
-- [1-Exploratory analysis and malignant cell annotation](00_malignant_non_malignant_annotations.html)
+- [1-Exploratory analysis low pass WGS tumor vs plasma](00_exploratory_analysis.html)

@@ -1,0 +1,181 @@
+---
+title: "Exploratory analysis of low-pass WGS"
+author: 
+- Zhan Yinxiu
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  workflowr::wflow_html:
+    toc_depth: 4
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo       = FALSE,
+                      message    = FALSE,
+                      warning    = FALSE,
+                      cache      = FALSE,
+                      autodep    = TRUE,
+                      fig.align  = 'center',
+                      fig.width  = 6,
+                      fig.height = 6)
+```
+
+```{r libraries}
+library(caret)
+library(ggplot2)
+library(stringi)
+library(stringr)
+library(gridExtra)
+```
+
+```{r functions}
+# Function to Create Confusion Matrix Plots and Return Grid
+create_confusion_matrix_grid <- function(tumor, plasma, samplesid, type="DEL") {
+  # Get unique sample IDs
+  unique_samples <- unique(samplesid)
+  
+  # Initialize a list to store plots
+  plot_list <- list()
+  
+  # Loop through each unique sample ID
+  for (sample in unique_samples) {
+    # Subset data for the current sample
+    subset_tumor <- tumor[samplesid == sample]
+    subset_plasma <- plasma[samplesid == sample]
+    
+    # Compute confusion matrix
+    cm <- table(Predicted = subset_plasma, Actual = subset_tumor)
+    
+    # Convert confusion matrix to a data frame for ggplot2
+    cm_df <- as.data.frame(as.table(cm))
+    
+    # Create the heatmap plot
+    plot <- ggplot(cm_df, aes(x = Predicted, y = Actual, fill = Freq)) +
+      geom_tile() +
+      geom_text(aes(label = Freq), color = "white", size = 5) +
+      scale_fill_gradient(low = "lightblue", high = "blue") +
+      labs(title = paste(type, sample), x = "Plasma", y = "Tumor") +
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5))
+    
+    # Add plot to the list
+    plot_list[[sample]] <- plot
+  }
+  
+  # Arrange the plots into a 3x2 grid
+  grid_plot <- do.call(grid.arrange, c(plot_list, ncol = 3, nrow = 2))
+  
+  # Return the grid plot
+  return(grid_plot)
+}
+```
+
+# Objectives
+
+In this report, we aim to evaluate the feasibility and confidence of CNV detection in plasma samples (vesicles) compared to tumor tissue samples using low-pass whole-genome sequencing (WGS). The low-pass WGS data were analyzed with ichorCNA, employing a 1 Mb bin size to estimate tumor fraction and identify copy number variations.
+
+```{r data loading}
+wgs_tumor_files = list.files("/hpcnfs/scratch/DIMA/zhan/gpelicci/liquid_biopsy_project/results/cna/", pattern = "tumor.cna.seg", full.names = TRUE) 
+wgs_plasma_files = list.files("/hpcnfs/scratch/DIMA/zhan/gpelicci/liquid_biopsy_project/results/cna/", pattern = "plasma.cna.seg", full.names = TRUE) 
+
+tumor_data = NULL
+for(file in wgs_tumor_files){
+  tmp = read.delim(file)[,c(1,2,3,4,5,6)]
+  colnames(tmp) = c("chr", "start", "end", "ncopy", "status", "logR")
+  tmp$sample = str_split(basename(file), "-")[[1]][1]
+  tumor_data = rbind(tumor_data, tmp)
+}
+
+plasma_data = NULL
+for(file in wgs_plasma_files){
+  tmp = read.delim(file)[,c(1,2,3,4,5,6)]
+  colnames(tmp) = c("chr", "start", "end", "ncopy", "status", "logR")
+  tmp$sample = str_split(basename(file), "-")[[1]][1]
+  plasma_data = rbind(plasma_data, tmp)
+}
+
+```
+
+
+We start by comparing the deletion and amplification detected in tumor and plasma samples. At this stage, we use all the CNVs.
+
+# Deletion
+
+Below, we present a comparison between plasma and tumor WGS low-pass data in detecting deletions, represented using confusion matrices.
+
+A confusion matrix is a summary of classification outcomes, showing how well predictions align with the actual values. It consists of four components:
+
+- True Positives (TP): Cases where both plasma and tumor samples correctly identify the presence of a deletion.
+- True Negatives (TN): Cases where both plasma and tumor samples correctly identify the absence of a deletion.
+- False Positives (FP): Cases where a deletion is detected in plasma but not in the tumor.
+- False Negatives (FN): Cases where a deletion is detected in the tumor but not in the plasma.
+
+In this analysis:
+
+TRUE indicates the presence of a deletion.
+FALSE indicates the absence of a deletion.
+
+As evident from the matrices, there is minimal overlap between deletions detected in plasma and those detected in tumor samples. This highlights the challenge of achieving concordant results between these two sample types, particularly in low-pass WGS data.
+
+```{r, fig.height=8, fig.width=12}
+tmptumor = tumor_data$ncopy == 1
+tmpplasma = plasma_data$ncopy == 1
+samplesid = plasma_data$sample
+gridplot <- create_confusion_matrix_grid(tmptumor, tmpplasma, samplesid)
+```
+
+
+
+# Amplification
+
+In this analysis:
+
+TRUE indicates the presence of a amplification higher or equal than 3 copies
+FALSE indicates the absence of a amplification.
+
+As evident from the matrices, there is little overlap between amplifications detected in plasma and those detected in tumor samples. This highlights the challenge of achieving concordant results between these two sample types, particularly in low-pass WGS data.
+
+```{r, fig.height=8, fig.width=12}
+tmptumor = tumor_data$ncopy >= 3
+tmpplasma = plasma_data$ncopy >= 3
+samplesid = plasma_data$sample
+gridplot <- create_confusion_matrix_grid(tmptumor, tmpplasma, samplesid, "Amplification")
+```
+
+
+## Comparison of log ratio of copy number
+
+Next, we examined how the log ratio of copy number in each bin varies between plasma and tumor samples, stratifying the analysis based on tumor sample categories: gain, neutral, and loss of copy number. At a resolution of 1 Mb, we observed a general tendency for copy number ratios to be preserved between plasma and tumor samples. Regions with copy number gains consistently exhibited higher log ratios compared to neutral or deleted regions. However, given the low tumor fraction (<10%) and sequencing depth, detecting CNAs at a 1 Mb resolution may exceed the limits of reliable detection. To address this, we will repeat the analysis using a coarser resolution of 10 Mb.
+
+```{r, fig.height=8, fig.width=12}
+
+  # Get unique sample IDs
+  unique_samples <- unique(samplesid)
+  
+  # Initialize a list to store plots
+  plot_list <- list()
+  
+  # Loop through each unique sample ID
+  for (sample in unique_samples) {
+    # Subset data for the current sample
+    subset_tumor <- tumor_data[samplesid == sample,]
+    subset_plasma <- plasma_data[samplesid == sample,]
+    
+    # merge
+    mg <- merge(subset_tumor, subset_plasma, by=c(1,2,3), suffixes = c("_tumor", "_plasma"))
+    
+    
+    # Create the heatmap plot
+    plot <- ggplot(mg, aes(x = status_tumor, y = logR_plasma, col = status_tumor)) +
+      geom_boxplot(outlier.shape = NA)+ 
+      labs(title =  sample, x = "Status Tumor", y = "logR Plasma") 
+    
+    # Add plot to the list
+    plot_list[[sample]] <- plot
+  }
+  
+  # Arrange the plots into a 3x2 grid
+  grid_plot <- do.call(grid.arrange, c(plot_list, ncol = 3, nrow = 2))
+  
+```
