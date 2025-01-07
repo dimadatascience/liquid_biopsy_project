@@ -128,7 +128,7 @@ for(file in wgs_plasma_files){
 
 # Comparison of log ratio of copy number
 
-We examined how the log ratio of copy number in each bin varies between plasma and tumor samples, stratifying the analysis based on tumor sample categories: gain, neutral, and loss of copy number. At a resolution of 1 Mb, we observed a general tendency for copy number ratios to be preserved between plasma and tumor samples. Regions with copy number gains consistently exhibited higher log ratios compared to neutral or deleted regions. However, given the low tumor fraction (<10%) and sequencing depth, detecting CNAs at a 1 Mb resolution may exceed the limits of reliable detection. To address this, we will repeat the analysis using a coarser resolution of 10 Mb.
+We examined how the log ratio of copy number in each bin varies between plasma and tumor samples, stratifying the analysis based on tumor sample categories: gain, neutral, and loss of copy number. At a resolution of 1 Mb, we observed a general tendency for copy number ratios to be preserved between plasma and tumor samples. Regions with copy number gains consistently (except for E06) exhibited higher log ratios compared to neutral or deleted regions. 
 
 ```{r, fig.height=8, fig.width=12}
   samplesid = plasma_data$sample
