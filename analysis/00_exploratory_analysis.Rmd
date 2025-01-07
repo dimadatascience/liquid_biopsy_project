@@ -27,47 +27,75 @@ library(ggplot2)
 library(stringi)
 library(stringr)
 library(gridExtra)
+library(GenomicRanges)
+library(BioCircos)
+library(GenomeInfoDb)
+library("interacCircos")
 ```
 
 ```{r functions}
-# Function to Create Confusion Matrix Plots and Return Grid
-create_confusion_matrix_grid <- function(tumor, plasma, samplesid, type="DEL") {
-  # Get unique sample IDs
-  unique_samples <- unique(samplesid)
+mycircos = function(plasma_data, tumor_data, status, sampleid){
+  df_plasma = plasma_data[plasma_data$status=="AMP" & plasma_data$sample == sampleid,]
+  df_tumor = tumor_data[tumor_data$status=="AMP" & tumor_data$sample == sampleid,]
   
-  # Initialize a list to store plots
-  plot_list <- list()
+  # Arcs coordinates
+  snvChr = df_plasma$seqnames
+  snvStart = df_plasma$start
+  snvEnd = df_plasma$end
+  # Values associated with each point, used as radial coordinate 
+  #   on a scale going to minRadius for the lowest value to maxRadius for the highest value
+  snvValues = rep(1, length(snvChr))
   
-  # Loop through each unique sample ID
-  for (sample in unique_samples) {
-    # Subset data for the current sample
-    subset_tumor <- tumor[samplesid == sample]
-    subset_plasma <- plasma[samplesid == sample]
-    
-    # Compute confusion matrix
-    cm <- table(Predicted = subset_plasma, Actual = subset_tumor)
-    
-    # Convert confusion matrix to a data frame for ggplot2
-    cm_df <- as.data.frame(as.table(cm))
-    
-    # Create the heatmap plot
-    plot <- ggplot(cm_df, aes(x = Predicted, y = Actual, fill = Freq)) +
-      geom_tile() +
-      geom_text(aes(label = Freq), color = "white", size = 5) +
-      scale_fill_gradient(low = "lightblue", high = "blue") +
-      labs(title = paste(type, sample), x = "Plasma", y = "Tumor") +
-      theme_minimal() +
-      theme(plot.title = element_text(hjust = 0.5))
-    
-    # Add plot to the list
-    plot_list[[sample]] <- plot
-  }
+  # Create CNV track
+  tracks = BioCircosCNVTrack(trackname = 'plasma_track', as.character(snvChr), snvStart, snvEnd, snvValues, 
+    color = "#CC0000", range = c(0,6), width = 2)
   
-  # Arrange the plots into a 3x2 grid
-  grid_plot <- do.call(grid.arrange, c(plot_list, ncol = 3, nrow = 2))
+  # Arcs coordinates
+  snvChr = df_tumor$seqnames
+  snvStart = df_tumor$start
+  snvEnd = df_tumor$end
+  # Values associated with each point, used as radial coordinate 
+  #   on a scale going to minRadius for the lowest value to maxRadius for the highest value
+  snvValues = rep(2, length(snvChr))
+  # Create CNV track
+  tracks = tracks + BioCircosCNVTrack(trackname = 'tumor_track', as.character(snvChr), snvStart, snvEnd, snvValues, 
+    color = "blue", range = c(0,6), width = 2)
   
-  # Return the grid plot
-  return(grid_plot)
+  # Add background
+  tracks = tracks + BioCircosBackgroundTrack("arcs_background", colors = "#2222EE")
+  
+  
+  df_plasma = plasma_data[plasma_data$status=="DEL" & plasma_data$sample == sampleid,]
+  df_tumor = tumor_data[tumor_data$status=="DEL" & tumor_data$sample == sampleid,]
+  
+  # Arcs coordinates
+  snvChr = df_plasma$seqnames
+  snvStart = df_plasma$start
+  snvEnd = df_plasma$end
+  # Values associated with each point, used as radial coordinate 
+  #   on a scale going to minRadius for the lowest value to maxRadius for the highest value
+  snvValues = rep(1, length(snvChr))
+  
+  # Create CNV track
+  tracks = tracks + BioCircosCNVTrack(trackname = 'plasma_track', as.character(snvChr), snvStart, snvEnd, snvValues, 
+    color = "pink", range = c(0,6), width = 2)
+  
+  # Arcs coordinates
+  snvChr = df_tumor$seqnames
+  snvStart = df_tumor$start
+  snvEnd = df_tumor$end
+  # Values associated with each point, used as radial coordinate 
+  #   on a scale going to minRadius for the lowest value to maxRadius for the highest value
+  snvValues = rep(2, length(snvChr))
+  # Create CNV track
+  tracks = tracks + BioCircosCNVTrack(trackname = 'tumor_track', as.character(snvChr), snvStart, snvEnd, snvValues, 
+    color = "lightblue", range = c(0,6), width = 2)
+  
+  # Add background
+  tracks = tracks + BioCircosBackgroundTrack("arcs_background", colors = "#2222EE")
+  
+  p = BioCircos(genome = main_chromosomes, tracks, genomeFillColor = "YlOrBr", genomeTicksDisplay = F, genomeLabelDy = 0) 
+  return(p)
 }
 ```
 
@@ -98,58 +126,12 @@ for(file in wgs_plasma_files){
 ```
 
 
-We start by comparing the deletion and amplification detected in tumor and plasma samples. At this stage, we use all the CNVs.
+# Comparison of log ratio of copy number
 
-# Deletion
-
-Below, we present a comparison between plasma and tumor WGS low-pass data in detecting deletions, represented using confusion matrices.
-
-A confusion matrix is a summary of classification outcomes, showing how well predictions align with the actual values. It consists of four components:
-
-- True Positives (TP): Cases where both plasma and tumor samples correctly identify the presence of a deletion.
-- True Negatives (TN): Cases where both plasma and tumor samples correctly identify the absence of a deletion.
-- False Positives (FP): Cases where a deletion is detected in plasma but not in the tumor.
-- False Negatives (FN): Cases where a deletion is detected in the tumor but not in the plasma.
-
-In this analysis:
-
-TRUE indicates the presence of a deletion.
-FALSE indicates the absence of a deletion.
-
-As evident from the matrices, there is minimal overlap between deletions detected in plasma and those detected in tumor samples. This highlights the challenge of achieving concordant results between these two sample types, particularly in low-pass WGS data.
+We examined how the log ratio of copy number in each bin varies between plasma and tumor samples, stratifying the analysis based on tumor sample categories: gain, neutral, and loss of copy number. At a resolution of 1 Mb, we observed a general tendency for copy number ratios to be preserved between plasma and tumor samples. Regions with copy number gains consistently exhibited higher log ratios compared to neutral or deleted regions. However, given the low tumor fraction (<10%) and sequencing depth, detecting CNAs at a 1 Mb resolution may exceed the limits of reliable detection. To address this, we will repeat the analysis using a coarser resolution of 10 Mb.
 
 ```{r, fig.height=8, fig.width=12}
-tmptumor = tumor_data$ncopy == 1
-tmpplasma = plasma_data$ncopy == 1
-samplesid = plasma_data$sample
-gridplot <- create_confusion_matrix_grid(tmptumor, tmpplasma, samplesid)
-```
-
-
-
-# Amplification
-
-In this analysis:
-
-TRUE indicates the presence of a amplification higher or equal than 3 copies
-FALSE indicates the absence of a amplification.
-
-As evident from the matrices, there is little overlap between amplifications detected in plasma and those detected in tumor samples. This highlights the challenge of achieving concordant results between these two sample types, particularly in low-pass WGS data.
-
-```{r, fig.height=8, fig.width=12}
-tmptumor = tumor_data$ncopy >= 3
-tmpplasma = plasma_data$ncopy >= 3
-samplesid = plasma_data$sample
-gridplot <- create_confusion_matrix_grid(tmptumor, tmpplasma, samplesid, "Amplification")
-```
-
-
-## Comparison of log ratio of copy number
-
-Next, we examined how the log ratio of copy number in each bin varies between plasma and tumor samples, stratifying the analysis based on tumor sample categories: gain, neutral, and loss of copy number. At a resolution of 1 Mb, we observed a general tendency for copy number ratios to be preserved between plasma and tumor samples. Regions with copy number gains consistently exhibited higher log ratios compared to neutral or deleted regions. However, given the low tumor fraction (<10%) and sequencing depth, detecting CNAs at a 1 Mb resolution may exceed the limits of reliable detection. To address this, we will repeat the analysis using a coarser resolution of 10 Mb.
-
-```{r, fig.height=8, fig.width=12}
-
+  samplesid = plasma_data$sample
   # Get unique sample IDs
   unique_samples <- unique(samplesid)
   
@@ -179,3 +161,198 @@ Next, we examined how the log ratio of copy number in each bin varies between pl
   grid_plot <- do.call(grid.arrange, c(plot_list, ncol = 3, nrow = 2))
   
 ```
+
+# Comparison of CNA 
+
+We treated consecutive CNAs of the same type as a single event. For instance, if there are 10 contiguous 1Mb regions of amplification (regardless of their amplitude), we count them as a single CNA amplification event. To assess concordance, we computed the overlap between plasma and tumor samples, defining two CNAs as overlapping if they shared at least 30\% of the length of the shorter CNA. Below, we present the fraction of CNAs detected in tumors that are also found in plasma, and vice versa. On average, around 30\% of CNAs identified in plasma were also detected in tumor samples. Conversely, as expected, a smaller fraction (12.5\%) of CNAs identified in tumors were also found in plasma.
+
+```{r data loading 2}
+wgs_tumor_files = list.files("/hpcnfs/scratch/DIMA/zhan/gpelicci/liquid_biopsy_project/results/cna/", pattern = "tumor.cna.seg", full.names = TRUE) 
+wgs_plasma_files = list.files("/hpcnfs/scratch/DIMA/zhan/gpelicci/liquid_biopsy_project/results/cna/", pattern = "plasma.cna.seg", full.names = TRUE) 
+
+tumor_data = NULL
+for(file in wgs_tumor_files){
+  tmp = read.delim(file)[,c(1,2,3,4,5,6)]
+  colnames(tmp) = c("chr", "start", "end", "ncopy", "status")
+  
+  tmp$status[tmp$ncopy == 1] = "DEL"
+  tmp$status[tmp$ncopy > 2] = "AMP"
+  for(status in unique(tmp$status)){
+    tmp1 = tmp[tmp$status==status,]
+    tmp_gr = makeGRangesFromDataFrame(tmp1)
+    start(tmp_gr) = start(tmp_gr) - 1
+    tmp_gr = reduce(tmp_gr)
+    start(tmp_gr) = start(tmp_gr) + 1 
+    tmp1 = data.frame(tmp_gr)[,c(1,2,3)]
+    tmp1$status = status
+    tmp1$sample = str_split(basename(file), "-")[[1]][1]
+    tumor_data = rbind(tumor_data, tmp1)
+  }
+  
+}
+
+plasma_data = NULL
+for(file in wgs_plasma_files){
+  tmp = read.delim(file)[,c(1,2,3,4,5,6)]
+  colnames(tmp) = c("chr", "start", "end", "ncopy", "status")
+  
+  tmp$status[tmp$ncopy == 1] = "DEL"
+  tmp$status[tmp$ncopy > 2] = "AMP"
+  for(status in unique(tmp$status)){
+    tmp1 = tmp[tmp$status==status,]
+    tmp_gr = makeGRangesFromDataFrame(tmp1)
+    start(tmp_gr) = start(tmp_gr) - 1
+    tmp_gr = reduce(tmp_gr)
+    start(tmp_gr) = start(tmp_gr) + 1 
+    tmp1 = data.frame(tmp_gr)[,c(1,2,3)]
+    tmp1$status = status
+    tmp1$sample = str_split(basename(file), "-")[[1]][1]
+    plasma_data = rbind(plasma_data, tmp1)
+  }
+}
+
+```
+
+
+
+```{r}
+results = NULL
+percentage = 0.3
+for(status in unique(plasma_data$status)){
+  for(sampleid in unique(plasma_data$sample)){
+    df_plasma = plasma_data[plasma_data$status==status & plasma_data$sample == sampleid,]
+    df_tumor = tumor_data[tumor_data$status==status & tumor_data$sample == sampleid,]
+    
+    gr_plasma <- GRanges(
+      seqnames = df_plasma$seqnames,
+      ranges = IRanges(start = df_plasma$start, end = df_plasma$end)
+    )
+    
+    gr_tumor <- GRanges(
+      seqnames = df_tumor$seqnames,
+      ranges = IRanges(start = df_tumor$start, end = df_tumor$end)
+    )
+    
+    
+    # Find all overlaps
+    overlaps <- findOverlaps(gr_plasma, gr_tumor)
+    if(length(overlaps)>0){
+      # Filter overlaps by percentage
+      valid_overlaps <- mapply(function(i, j) {
+        overlap_length <- width(pintersect(gr_plasma[i], gr_tumor[j]))
+        min_length <- min(width(gr_plasma[i]), width(gr_tumor[j]))
+        overlap_length / min_length >= percentage
+      }, queryHits(overlaps), subjectHits(overlaps))
+      
+      # Get indices of valid overlaps
+      valid_indices <- overlaps[valid_overlaps]
+      
+      # Calculate counts
+      overlapping_count <- length(unique(queryHits(valid_indices)))
+      specific_plasma <- length(gr_plasma) - overlapping_count
+      specific_tumor <- length(gr_tumor) - length(unique(subjectHits(valid_indices)))
+    }else{
+      overlapping_count = 0
+      specific_plasma <- length(gr_plasma)
+      specific_tumor <- length(gr_tumor)
+    }
+    tmp = data.frame(fraction = c(overlapping_count/(specific_plasma+overlapping_count), overlapping_count/(specific_tumor+overlapping_count)), 
+                     case = c("fraction_relative_plasma", "fraction_relative_tumor"),
+                     status = rep(status, 2),
+                     sampleid = rep(sampleid, 2)
+                     )
+    results = rbind(results, tmp)
+  }
+}
+```
+
+```{r}
+p1 = ggplot(data = results[results$case == "fraction_relative_plasma" & results$status!="NEUT",], 
+       aes(x = as.factor(sampleid), y = fraction, fill = status)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(x = "Sample ID", y = "Fraction detected in tumor", fill = "Status", title="CNA in Plasma") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+p2 = ggplot(data = results[results$case == "fraction_relative_tumor" & results$status!="NEUT",], 
+       aes(x = as.factor(sampleid), y = fraction, fill = status)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(x = "Sample ID", y = "Fraction detected in plasma", fill = "Status", title="CNA in Tumor") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r, fig.width=12}
+grid.arrange(p1, p2, ncol = 2)
+```
+
+
+# Circle plot for visual comparison
+
+Next, we generated a circos plot to visually inspect the overlaps. CNA amplifications from the plasma sample are highlighted in red, while deletions are shown in pink. Similarly, amplifications from the tumor sample are displayed in blue, and deletions in light blue.
+
+```{r}
+# Get chromosome sizes for hg38
+hg38_sizes <- seqlengths(GenomeInfoDb::Seqinfo(genome = "hg38"))
+names(hg38_sizes) = str_remove(names(hg38_sizes), "chr")
+main_chromosomes <- as.list(hg38_sizes[names(hg38_sizes) %in% c(as.character(1:22), "X", "Y")])
+```
+
+## C2 
+
+```{r}
+sampleid = "C2"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+## E06 
+
+```{r}
+sampleid = "E06"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+
+## E23 
+
+```{r}
+sampleid = "E23"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+## E27
+
+```{r}
+sampleid = "E27"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+## H7 
+
+```{r}
+sampleid = "H7"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+
+
+## H8
+
+```{r}
+sampleid = "H8"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+
+
+
