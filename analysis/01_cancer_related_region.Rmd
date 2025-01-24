@@ -1,0 +1,274 @@
+---
+title: "Exploratory analysis of low-pass WGS"
+author: 
+- Zhan Yinxiu
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  workflowr::wflow_html:
+    toc_depth: 4
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo       = FALSE,
+                      message    = FALSE,
+                      warning    = FALSE,
+                      cache      = FALSE,
+                      autodep    = TRUE,
+                      fig.align  = 'center',
+                      fig.width  = 6,
+                      fig.height = 6)
+```
+
+```{r libraries}
+library(caret)
+library(ggplot2)
+library(stringi)
+library(stringr)
+library(gridExtra)
+library(GenomicRanges)
+library(BioCircos)
+library(GenomeInfoDb)
+library("interacCircos")
+```
+
+```{r functions}
+mycircos = function(plasma_data, tumor_data, status, sampleid){
+  df_plasma = plasma_data[plasma_data$status=="AMP" & plasma_data$sample == sampleid,]
+  df_tumor = tumor_data[tumor_data$status=="AMP" & tumor_data$sample == sampleid,]
+  
+  # Arcs coordinates
+  snvChr = df_plasma$chr
+  snvStart = df_plasma$start
+  snvEnd = df_plasma$end
+  # Values associated with each point, used as radial coordinate 
+  #   on a scale going to minRadius for the lowest value to maxRadius for the highest value
+  snvValues = rep(1, length(snvChr))
+  
+  # Create CNV track
+  tracks = BioCircosCNVTrack(trackname = 'plasma_track', as.character(snvChr), snvStart, snvEnd, snvValues, 
+    color = "#CC0000", range = c(0,6), width = 2)
+  
+  # Arcs coordinates
+  snvChr = df_tumor$chr
+  snvStart = df_tumor$start
+  snvEnd = df_tumor$end
+  # Values associated with each point, used as radial coordinate 
+  #   on a scale going to minRadius for the lowest value to maxRadius for the highest value
+  snvValues = rep(2, length(snvChr))
+  # Create CNV track
+  tracks = tracks + BioCircosCNVTrack(trackname = 'tumor_track', as.character(snvChr), snvStart, snvEnd, snvValues, 
+    color = "blue", range = c(0,6), width = 2)
+  
+  # Add background
+  tracks = tracks + BioCircosBackgroundTrack("arcs_background", colors = "#2222EE")
+  
+  
+  df_plasma = plasma_data[plasma_data$status=="DEL" & plasma_data$sample == sampleid,]
+  df_tumor = tumor_data[tumor_data$status=="DEL" & tumor_data$sample == sampleid,]
+  
+  # Arcs coordinates
+  snvChr = df_plasma$chr
+  snvStart = df_plasma$start
+  snvEnd = df_plasma$end
+  # Values associated with each point, used as radial coordinate 
+  #   on a scale going to minRadius for the lowest value to maxRadius for the highest value
+  snvValues = rep(1, length(snvChr))
+  
+  # Create CNV track
+  tracks = tracks + BioCircosCNVTrack(trackname = 'plasma_track', as.character(snvChr), snvStart, snvEnd, snvValues, 
+    color = "pink", range = c(0,6), width = 2)
+  
+  # Arcs coordinates
+  snvChr = df_tumor$chr
+  snvStart = df_tumor$start
+  snvEnd = df_tumor$end
+  # Values associated with each point, used as radial coordinate 
+  #   on a scale going to minRadius for the lowest value to maxRadius for the highest value
+  snvValues = rep(2, length(snvChr))
+  # Create CNV track
+  tracks = tracks + BioCircosCNVTrack(trackname = 'tumor_track', as.character(snvChr), snvStart, snvEnd, snvValues, 
+    color = "lightblue", range = c(0,6), width = 2)
+  
+  # Add background
+  tracks = tracks + BioCircosBackgroundTrack("arcs_background", colors = "#2222EE")
+  
+  p = BioCircos(genome = main_chromosomes, tracks, genomeFillColor = "YlOrBr", genomeTicksDisplay = F, genomeLabelDy = 0) 
+  return(p)
+}
+```
+
+# Objectives
+
+In this report, we focus exclusively on comparing copy number variations (CNVs) that are annotated as pathogenic or likely pathogenic, using [ClassifyCNV](https://doi.org/10.1038/s41598-020-76425-3)
+
+```{r data loading}
+wgs_tumor_files = list.files("/hpcnfs/scratch/DIMA/zhan/gpelicci/liquid_biopsy_project/data/", pattern = ".tumor.cnv.annotated.tsv", full.names = TRUE) 
+wgs_plasma_files = list.files("/hpcnfs/scratch/DIMA/zhan/gpelicci/liquid_biopsy_project/data/", pattern = ".plasma.cnv.annotated.tsv", full.names = TRUE) 
+
+tumor_data = NULL
+for(file in wgs_tumor_files){
+  tmp = read.delim(file)[,c(2,3,4,5,6)]
+  colnames(tmp) = c("chr", "start", "end", "status", "Classification")
+  tmp$sample = str_split(basename(file), "\\.")[[1]][1]
+  tmp$status[tmp$status=="DUP"] = "AMP"
+  tumor_data = rbind(tumor_data, tmp)
+}
+tumor_data = tumor_data[tumor_data$Classification !="Uncertain significance", ]
+
+plasma_data = NULL
+for(file in wgs_plasma_files){
+  tmp = read.delim(file)[,c(2,3,4,5,6)]
+  colnames(tmp) = c("chr", "start", "end", "status", "Classification")
+  tmp$sample = str_split(basename(file), "\\.")[[1]][1]
+  tmp$status[tmp$status=="DUP"] = "AMP"
+  plasma_data = rbind(plasma_data, tmp)
+}
+plasma_data = plasma_data[plasma_data$Classification != "Uncertain significance", ]
+```
+
+Below, we present the fraction of CNAs detected in tumors that are also found in plasma, and vice versa. On average, around 31\% of CNAs identified in plasma were also detected in tumor samples. Conversely, as expected, a smaller fraction (13\%) of CNAs identified in tumors were also found in plasma. These proportions show minimal variation compared to the overall CNV analysis.
+
+```{r}
+results = NULL
+percentage = 0.3
+for(status in unique(plasma_data$status)){
+  for(sampleid in unique(plasma_data$sample)){
+    df_plasma = plasma_data[plasma_data$status==status & plasma_data$sample == sampleid,]
+    df_tumor = tumor_data[tumor_data$status==status & tumor_data$sample == sampleid,]
+    
+    gr_plasma <- GRanges(
+      seqnames = df_plasma$chr,
+      ranges = IRanges(start = df_plasma$start, end = df_plasma$end)
+    )
+    
+    gr_tumor <- GRanges(
+      seqnames = df_tumor$chr,
+      ranges = IRanges(start = df_tumor$start, end = df_tumor$end)
+    )
+    
+    
+    # Find all overlaps
+    overlaps <- findOverlaps(gr_plasma, gr_tumor)
+    if(length(overlaps)>0){
+      # Filter overlaps by percentage
+      valid_overlaps <- mapply(function(i, j) {
+        overlap_length <- width(pintersect(gr_plasma[i], gr_tumor[j]))
+        min_length <- min(width(gr_plasma[i]), width(gr_tumor[j]))
+        overlap_length / min_length >= percentage
+      }, queryHits(overlaps), subjectHits(overlaps))
+      
+      # Get indices of valid overlaps
+      valid_indices <- overlaps[valid_overlaps]
+      
+      # Calculate counts
+      overlapping_count <- length(unique(queryHits(valid_indices)))
+      specific_plasma <- length(gr_plasma) - overlapping_count
+      specific_tumor <- length(gr_tumor) - length(unique(subjectHits(valid_indices)))
+    }else{
+      overlapping_count = 0
+      specific_plasma <- length(gr_plasma)
+      specific_tumor <- length(gr_tumor)
+    }
+    tmp = data.frame(fraction = c(overlapping_count/(specific_plasma+overlapping_count), overlapping_count/(specific_tumor+overlapping_count)), 
+                     case = c("fraction_relative_plasma", "fraction_relative_tumor"),
+                     status = rep(status, 2),
+                     sampleid = rep(sampleid, 2)
+                     )
+    results = rbind(results, tmp)
+  }
+}
+```
+
+```{r}
+p1 = ggplot(data = results[results$case == "fraction_relative_plasma" & results$status!="NEUT",], 
+       aes(x = as.factor(sampleid), y = fraction, fill = status)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(x = "Sample ID", y = "Fraction detected in tumor", fill = "Status", title="CNA in Plasma") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+p2 = ggplot(data = results[results$case == "fraction_relative_tumor" & results$status!="NEUT",], 
+       aes(x = as.factor(sampleid), y = fraction, fill = status)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(x = "Sample ID", y = "Fraction detected in plasma", fill = "Status", title="CNA in Tumor") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r, fig.width=12}
+grid.arrange(p1, p2, ncol = 2)
+```
+
+
+# Circle plot for visual comparison
+
+Next, we generated a circos plot to visually inspect the overlaps. CNA amplifications from the plasma sample are highlighted in red, while deletions are shown in pink. Similarly, amplifications from the tumor sample are displayed in blue, and deletions in light blue.
+
+```{r}
+# Get chromosome sizes for hg38
+hg38_sizes <- seqlengths(GenomeInfoDb::Seqinfo(genome = "hg38"))
+names(hg38_sizes) = str_remove(names(hg38_sizes), "chr")
+main_chromosomes <- as.list(hg38_sizes[names(hg38_sizes) %in% c(as.character(1:22), "X", "Y")])
+tumor_data$chr = str_remove(tumor_data$chr, "chr")
+plasma_data$chr = str_remove(plasma_data$chr, "chr")
+```
+
+## C2 
+
+```{r}
+sampleid = "C2"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+## E06 
+
+```{r}
+sampleid = "E06"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+
+## E23 
+
+```{r}
+sampleid = "E23"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+## E27
+
+```{r}
+sampleid = "E27"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+## H7 
+
+```{r}
+sampleid = "H7"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+
+## H8
+
+```{r}
+sampleid = "H8"
+mycircos(plasma_data, tumor_data, status, sampleid)
+```
+
+
+
+
+
