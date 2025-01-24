@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Zhan Yinxiu" />
+
+
+<title>Exploratory analysis of low-pass WGS</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="site_libs/d3-3.3.10/d3.js"></script>
+<script src="site_libs/biocircos-1.1.0-1.1.2/./biocircos-1.1.2.js"></script>
+<script src="site_libs/BioCircos-binding-0.3.4/BioCircos.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scmseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.research.ieo.it/research-and-technology/technological-units/data-science-unit/">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Exploratory analysis of low-pass WGS</h1>
+<h4 class="author">Zhan Yinxiu</h4>
+<h4 class="date">24 January, 2025</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-01-24
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>liquid_biopsy_project/analysis/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed12345code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(12345)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed12345code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(12345)</code> was run prior to running the
+code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongabsolute">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>File paths:</strong> absolute </a>
+</p>
+</div>
+<div id="strongFilepathsstrongabsolute" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Using absolute paths to the files within your workflowr project makes it
+difficult for you and others to run your code on a different machine.
+Change the absolute path(s) below to the suggested relative path(s) to
+make your code more reproducible.
+</p>
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th style="text-align:left;">
+absolute
+</th>
+<th style="text-align:left;">
+relative
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+/hpcnfs/scratch/DIMA/zhan/gpelicci/liquid_biopsy_project/data/
+</td>
+<td style="text-align:left;">
+../data
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdimadatascienceliquidbiopsyprojecttree6ebab5c1d8e7f821b98e450461eb12439053d4b3targetblank6ebab5ca">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/dimadatascience/liquid_biopsy_project/tree/6ebab5c1d8e7f821b98e450461eb12439053d4b3" target="_blank">6ebab5c</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomdimadatascienceliquidbiopsyprojecttree6ebab5c1d8e7f821b98e450461eb12439053d4b3targetblank6ebab5ca"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/dimadatascience/liquid_biopsy_project/tree/6ebab5c1d8e7f821b98e450461eb12439053d4b3" target="_blank">6ebab5c</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  .gitignore
+    Untracked:  data/C2.plasma.cnv.annotated.tsv
+    Untracked:  data/C2.plasma.cnv.tsv
+    Untracked:  data/C2.tumor.cnv.annotated.tsv
+    Untracked:  data/C2.tumor.cnv.tsv
+    Untracked:  data/E06.plasma.cnv.annotated.tsv
+    Untracked:  data/E06.plasma.cnv.tsv
+    Untracked:  data/E06.tumor.cnv.annotated.tsv
+    Untracked:  data/E06.tumor.cnv.tsv
+    Untracked:  data/E23.plasma.cnv.annotated.tsv
+    Untracked:  data/E23.plasma.cnv.tsv
+    Untracked:  data/E23.tumor.cnv.annotated.tsv
+    Untracked:  data/E23.tumor.cnv.tsv
+    Untracked:  data/E27.plasma.cnv.annotated.tsv
+    Untracked:  data/E27.plasma.cnv.tsv
+    Untracked:  data/E27.tumor.cnv.annotated.tsv
+    Untracked:  data/E27.tumor.cnv.tsv
+    Untracked:  data/H7.plasma.cnv.annotated.tsv
+    Untracked:  data/H7.plasma.cnv.tsv
+    Untracked:  data/H7.tumor.cnv.annotated.tsv
+    Untracked:  data/H7.tumor.cnv.tsv
+    Untracked:  data/H8.plasma.cnv.annotated.tsv
+    Untracked:  data/H8.plasma.cnv.tsv
+    Untracked:  data/H8.tumor.cnv.annotated.tsv
+    Untracked:  data/H8.tumor.cnv.tsv
+
+Unstaged changes:
+    Modified:   analysis/00_exploratory_analysis.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/01_cancer_related_region.Rmd</code>) and HTML
+(<code>docs/01_cancer_related_region.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/dimadatascience/liquid_biopsy_project/blob/6ebab5c1d8e7f821b98e450461eb12439053d4b3/analysis/01_cancer_related_region.Rmd" target="_blank">6ebab5c</a>
+</td>
+<td>
+Yinxiu Zhan
+</td>
+<td>
+2025-01-24
+</td>
+<td>
+Add analysis using pathogenic variants
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="objectives" class="section level1">
+<h1>Objectives</h1>
+<p>In this report, we focus exclusively on comparing copy number
+variations (CNVs) that are annotated as pathogenic or likely pathogenic,
+using <a
+href="https://doi.org/10.1038/s41598-020-76425-3">ClassifyCNV</a></p>
+<p>Below, we present the fraction of CNAs detected in tumors that are
+also found in plasma, and vice versa. On average, around 31% of CNAs
+identified in plasma were also detected in tumor samples. Conversely, as
+expected, a smaller fraction (13%) of CNAs identified in tumors were
+also found in plasma. These proportions show minimal variation compared
+to the overall CNV analysis.</p>
+<p><img src="figure/01_cancer_related_region.Rmd/unnamed-chunk-4-1.png" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="circle-plot-for-visual-comparison" class="section level1">
+<h1>Circle plot for visual comparison</h1>
+<p>Next, we generated a circos plot to visually inspect the overlaps.
+CNA amplifications from the plasma sample are highlighted in red, while
+deletions are shown in pink. Similarly, amplifications from the tumor
+sample are displayed in blue, and deletions in light blue.</p>
+<div id="c2" class="section level2">
+<h2>C2</h2>
+<div class="BioCircos html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-8d32cfd9db97395c4a5f" style="width:576px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-8d32cfd9db97395c4a5f">{"x":{"message":["function (..., domain = NULL, appendLF = TRUE) ","{","    cond <- if (...length() == 1L && inherits(..1, \"condition\")) {","        if (nargs() > 1L) ","            warning(\"additional arguments ignored in message()\")","        ..1","    }","    else {","        msg <- .makeMessage(..., domain = domain, appendLF = appendLF)","        call <- sys.call()","        simpleMessage(msg, call)","    }","    defaultHandler <- function(c) {","        cat(conditionMessage(c), file = stderr(), sep = \"\")","    }","    withRestarts({","        signalCondition(cond)","        defaultHandler(cond)","    }, muffleMessage = function() NULL)","    invisible()","}"],"tracklist":[["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"#CC0000","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"51000001","end":"79000000","value":"1"},{"chr":"10","start":"88000001","end":"133000000","value":"1"},{"chr":"11","start":"112000001","end":"135000000","value":"1"},{"chr":"12","start":"105000001","end":"133000000","value":"1"},{"chr":"15","start":"61000001","end":"75000000","value":"1"},{"chr":"15","start":"86000001","end":"101000000","value":"1"},{"chr":"1","start":"17000001","end":"61000000","value":"1"},{"chr":"1","start":"3000001","end":"12000000","value":"1"},{"chr":"20","start":"1","end":"25000000","value":"1"},{"chr":"20","start":"32000001","end":"64000000","value":"1"},{"chr":"22","start":"25000001","end":"51000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"blue","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"122000001","end":"133000000","value":"2"},{"chr":"11","start":"112000001","end":"135000000","value":"2"},{"chr":"11","start":"5000001","end":"31000000","value":"2"},{"chr":"12","start":"10000001","end":"31000000","value":"2"},{"chr":"12","start":"1","end":"8000000","value":"2"},{"chr":"12","start":"39000001","end":"63000000","value":"2"},{"chr":"12","start":"64000001","end":"133000000","value":"2"},{"chr":"14","start":"92000001","end":"105000000","value":"2"},{"chr":"20","start":"57000001","end":"64000000","value":"2"},{"chr":"2","start":"1","end":"22000000","value":"2"},{"chr":"7","start":"104000001","end":"128000000","value":"2"},{"chr":"7","start":"129000001","end":"143000000","value":"2"},{"chr":"7","start":"154000001","end":"159000000","value":"2"},{"chr":"7","start":"36000001","end":"45000000","value":"2"},{"chr":"7","start":"7000001","end":"32000000","value":"2"},{"chr":"7","start":"78000001","end":"97000000","value":"2"},{"chr":"8","start":"13000001","end":"43000000","value":"2"},{"chr":"8","start":"48000001","end":"85000000","value":"2"},{"chr":"8","start":"86000001","end":"145000000","value":"2"},{"chr":"9","start":"1000001","end":"33000000","value":"2"},{"chr":"9","start":"34000001","end":"38000000","value":"2"},{"chr":"9","start":"69000001","end":"94000000","value":"2"},{"chr":"9","start":"95000001","end":"138000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}],["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"pink","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"1000001","end":"37000000","value":"1"},{"chr":"12","start":"10000001","end":"31000000","value":"1"},{"chr":"12","start":"1","end":"8000000","value":"1"},{"chr":"12","start":"32000001","end":"33000000","value":"1"},{"chr":"12","start":"39000001","end":"63000000","value":"1"},{"chr":"12","start":"64000001","end":"105000000","value":"1"},{"chr":"19","start":"1000001","end":"20000000","value":"1"},{"chr":"19","start":"29000001","end":"42000000","value":"1"},{"chr":"19","start":"44000001","end":"54000000","value":"1"},{"chr":"19","start":"55000001","end":"59000000","value":"1"},{"chr":"3","start":"169000001","end":"195000000","value":"1"},{"chr":"3","start":"196000001","end":"198000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"lightblue","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"12000001","end":"37000000","value":"2"},{"chr":"16","start":"1","end":"2000000","value":"2"},{"chr":"16","start":"3000001","end":"14000000","value":"2"},{"chr":"16","start":"47000001","end":"70000000","value":"2"},{"chr":"16","start":"72000001","end":"79000000","value":"2"},{"chr":"17","start":"1000001","end":"3000000","value":"2"},{"chr":"17","start":"17000001","end":"18000000","value":"2"},{"chr":"17","start":"28000001","end":"30000000","value":"2"},{"chr":"17","start":"31000001","end":"36000000","value":"2"},{"chr":"17","start":"39000001","end":"43000000","value":"2"},{"chr":"17","start":"4000001","end":"15000000","value":"2"},{"chr":"17","start":"44000001","end":"45000000","value":"2"},{"chr":"17","start":"48000001","end":"62000000","value":"2"},{"chr":"17","start":"65000001","end":"72000000","value":"2"},{"chr":"19","start":"1000001","end":"20000000","value":"2"},{"chr":"19","start":"29000001","end":"42000000","value":"2"},{"chr":"19","start":"44000001","end":"54000000","value":"2"},{"chr":"19","start":"55000001","end":"59000000","value":"2"},{"chr":"1","start":"235000001","end":"242000000","value":"2"},{"chr":"1","start":"244000001","end":"248000000","value":"2"},{"chr":"4","start":"103000001","end":"118000000","value":"2"},{"chr":"4","start":"132000001","end":"143000000","value":"2"},{"chr":"4","start":"145000001","end":"189000000","value":"2"},{"chr":"4","start":"70000001","end":"102000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}]],"genome":{"1":248956422,"2":242193529,"3":198295559,"4":190214555,"5":181538259,"6":170805979,"7":159345973,"8":145138636,"9":138394717,"10":133797422,"11":135086622,"12":133275309,"13":114364328,"14":107043718,"15":101991189,"16":90338345,"17":83257441,"18":80373285,"19":58617616,"20":64444167,"21":46709983,"22":50818468,"X":156040895,"Y":57227415},"genomeFillColor":["#FFFFE5","#FFFCD8","#FFFACC","#FFF7BF","#FEF2B2","#FEECA5","#FEE698","#FEDE88","#FED574","#FECC60","#FEC24D","#FEB541","#FEA736","#FE9A2A","#F98E23","#F3811D","#EE7516","#E66910","#DC5E0B","#D25305","#C64902","#B23F02","#9F3603","#8C2D04"],"chrPad":0.04,"displayGenomeBorder":true,"genomeBorderColor":"#000","genomeBorderSize":0.5,"genomeTicksDisplay":false,"genomeTicksLen":5,"genomeTicksColor":"#000","genomeTicksTextSize":"0.6em","genomeTicksTextColor":"#000","genomeTicksScale":30000000,"genomeLabelDisplay":true,"genomeLabelTextSize":"10pt","genomeLabelTextColor":"#000","genomeLabelDx":0,"genomeLabelDy":0,"genomeLabelOrientation":0,"SNPMouseEvent":true,"SNPMouseClickDisplay":false,"SNPMouseClickColor":"red","SNPMouseClickCircleSize":4,"SNPMouseClickCircleOpacity":1,"SNPMouseClickCircleStrokeColor":"#F26223","SNPMouseClickCircleStrokeWidth":0,"SNPMouseClickTextFromData":"fourth","SNPMouseClickTextOpacity":1,"SNPMouseClickTextColor":"red","SNPMouseClickTextSize":8,"SNPMouseClickTextPostionX":1,"SNPMouseClickTextPostionY":10,"SNPMouseClickTextDrag":true,"SNPMouseDownDisplay":false,"SNPMouseDownColor":"green","SNPMouseDownCircleSize":4,"SNPMouseDownCircleOpacity":1,"SNPMouseDownCircleStrokeColor":"#F26223","SNPMouseDownCircleStrokeWidth":0,"SNPMouseEnterDisplay":false,"SNPMouseEnterColor":"yellow","SNPMouseEnterCircleSize":4,"SNPMouseEnterCircleOpacity":1,"SNPMouseEnterCircleStrokeColor":"#F26223","SNPMouseEnterCircleStrokeWidth":0,"SNPMouseLeaveDisplay":false,"SNPMouseLeaveColor":"pink","SNPMouseLeaveCircleSize":4,"SNPMouseLeaveCircleOpacity":1,"SNPMouseLeaveCircleStrokeColor":"#F26223","SNPMouseLeaveCircleStrokeWidth":0,"SNPMouseMoveDisplay":false,"SNPMouseMoveColor":"red","SNPMouseMoveCircleSize":2,"SNPMouseMoveCircleOpacity":1,"SNPMouseMoveCircleStrokeColor":"#F26223","SNPMouseMoveCircleStrokeWidth":0,"SNPMouseOutDisplay":true,"SNPMouseOutAnimationTime":500,"SNPMouseOutColor":"none","SNPMouseOutCircleSize":2,"SNPMouseOutCircleOpacity":"none","SNPMouseOutCircleStrokeColor":"red","SNPMouseOutCircleStrokeWidth":0,"SNPMouseUpDisplay":false,"SNPMouseUpColor":"grey","SNPMouseUpCircleSize":4,"SNPMouseUpCircleOpacity":1,"SNPMouseUpCircleStrokeColor":"#F26223","SNPMouseUpCircleStrokeWidth":0,"SNPMouseOverDisplay":true,"SNPMouseOverColor":"#FF0000","SNPMouseOverCircleSize":3,"SNPMouseOverCircleOpacity":0.9,"SNPMouseOverCircleStrokeColor":"#F26223","SNPMouseOverCircleStrokeWidth":1,"SNPMouseOverTooltipsHtml01":"Chromosome: ","SNPMouseOverTooltipsHtml02":"<br/>Position: ","SNPMouseOverTooltipsHtml03":"<br/>Value: ","SNPMouseOverTooltipsHtml04":"<br/>","SNPMouseOverTooltipsHtml05":"","SNPMouseOverTooltipsBorderWidth":"1px","zoom":true,"TEXTModuleDragEvent":false,"ARCMouseEvent":true,"ARCMouseClickDisplay":false,"ARCMouseClickColor":"red","ARCMouseClickArcOpacity":1,"ARCMouseClickArcStrokeColor":"#F26223","ARCMouseClickArcStrokeWidth":1,"ARCMouseClickTextFromData":"fourth","ARCMouseClickTextOpacity":1,"ARCMouseClickTextColor":"red","ARCMouseClickTextSize":8,"ARCMouseClickTextPostionX":0,"ARCMouseClickTextPostionY":0,"ARCMouseClickTextDrag":true,"ARCMouseDownDisplay":false,"ARCMouseDownColor":"green","ARCMouseDownArcOpacity":1,"ARCMouseDownArcStrokeColor":"#F26223","ARCMouseDownArcStrokeWidth":0,"ARCMouseEnterDisplay":false,"ARCMouseEnterColor":"yellow","ARCMouseEnterArcOpacity":1,"ARCMouseEnterArcStrokeColor":"#F26223","ARCMouseEnterArcStrokeWidth":0,"ARCMouseLeaveDisplay":false,"ARCMouseLeaveColor":"pink","ARCMouseLeaveArcOpacity":1,"ARCMouseLeaveArcStrokeColor":"#F26223","ARCMouseLeaveArcStrokeWidth":0,"ARCMouseMoveDisplay":false,"ARCMouseMoveColor":"red","ARCMouseMoveArcOpacity":1,"ARCMouseMoveArcStrokeColor":"#F26223","ARCMouseMoveArcStrokeWidth":0,"ARCMouseOutDisplay":true,"ARCMouseOutAnimationTime":500,"ARCMouseOutColor":"none","ARCMouseOutArcOpacity":"none","ARCMouseOutArcStrokeColor":"red","ARCMouseOutArcStrokeWidth":0,"ARCMouseUpDisplay":false,"ARCMouseUpColor":"grey","ARCMouseUpArcOpacity":1,"ARCMouseUpArcStrokeColor":"#F26223","ARCMouseUpArcStrokeWidth":0,"ARCMouseOverDisplay":true,"ARCMouseOverColor":"#FF0000","ARCMouseOverArcOpacity":0.9,"ARCMouseOverArcStrokeColor":"#F26223","ARCMouseOverArcStrokeWidth":3,"ARCMouseOverTooltipsHtml01":"Chromosome: ","ARCMouseOverTooltipsHtml02":"<br/>Start: ","ARCMouseOverTooltipsHtml03":"<br/>End: ","ARCMouseOverTooltipsHtml04":"<br/>","ARCMouseOverTooltipsHtml05":"","ARCMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseEvent":true,"HISTOGRAMMouseClickDisplay":false,"HISTOGRAMMouseClickColor":"red","HISTOGRAMMouseClickOpacity":1,"HISTOGRAMMouseClickStrokeColor":"none","HISTOGRAMMouseClickStrokeWidth":"none","HISTOGRAMMouseDownDisplay":false,"HISTOGRAMMouseDownColor":"red","HISTOGRAMMouseDownOpacity":1,"HISTOGRAMMouseDownStrokeColor":"none","HISTOGRAMMouseDownStrokeWidth":"none","HISTOGRAMMouseEnterDisplay":false,"HISTOGRAMMouseEnterColor":"red","HISTOGRAMMouseEnterOpacity":1,"HISTOGRAMMouseEnterStrokeColor":"none","HISTOGRAMMouseEnterStrokeWidth":"none","HISTOGRAMMouseLeaveDisplay":false,"HISTOGRAMMouseLeaveColor":"red","HISTOGRAMMouseLeaveOpacity":1,"HISTOGRAMMouseLeaveStrokeColor":"none","HISTOGRAMMouseLeaveStrokeWidth":"none","HISTOGRAMMouseMoveDisplay":false,"HISTOGRAMMouseMoveColor":"red","HISTOGRAMMouseMoveOpacity":1,"HISTOGRAMMouseMoveStrokeColor":"none","HISTOGRAMMouseMoveStrokeWidth":"none","HISTOGRAMMouseOutDisplay":true,"HISTOGRAMMouseOutAnimationTime":500,"HISTOGRAMMouseOutColor":"none","HISTOGRAMMouseOutOpacity":1,"HISTOGRAMMouseOutStrokeColor":"none","HISTOGRAMMouseOutStrokeWidth":"none","HISTOGRAMMouseUpDisplay":false,"HISTOGRAMMouseUpColor":"red","HISTOGRAMMouseUpOpacity":1,"HISTOGRAMMouseUpStrokeColor":"none","HISTOGRAMMouseUpStrokeWidth":"none","HISTOGRAMMouseOverDisplay":true,"HISTOGRAMMouseOverColor":"#FF0000","HISTOGRAMMouseOverOpacity":0.9,"HISTOGRAMMouseOverStrokeColor":"none","HISTOGRAMMouseOverStrokeWidth":"none","HISTOGRAMMouseOverTooltipsHtml01":"Chromosome: ","HISTOGRAMMouseOverTooltipsHtml02":"<br/>Start: ","HISTOGRAMMouseOverTooltipsHtml03":" End: ","HISTOGRAMMouseOverTooltipsHtml04":"<br/>","HISTOGRAMMouseOverTooltipsHtml05":"<br/>Value: ","HISTOGRAMMouseOverTooltipsHtml06":"","HISTOGRAMMouseOverTooltipsPosition":"absolute","HISTOGRAMMouseOverTooltipsBackgroundColor":"white","HISTOGRAMMouseOverTooltipsBorderStyle":"solid","HISTOGRAMMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseOverTooltipsPadding":"3px","HISTOGRAMMouseOverTooltipsBorderRadius":"3px","HISTOGRAMMouseOverTooltipsOpacity":0.8,"HEATMAPMouseEvent":true,"HEATMAPMouseClickDisplay":false,"HEATMAPMouseClickColor":"green","HEATMAPMouseClickOpacity":1,"HEATMAPMouseClickStrokeColor":"none","HEATMAPMouseClickStrokeWidth":"none","HEATMAPMouseDownDisplay":false,"HEATMAPMouseDownColor":"green","HEATMAPMouseDownOpacity":1,"HEATMAPMouseDownStrokeColor":"none","HEATMAPMouseDownStrokeWidth":"none","HEATMAPMouseEnterDisplay":false,"HEATMAPMouseEnterColor":"green","HEATMAPMouseEnterOpacity":1,"HEATMAPMouseEnterStrokeColor":"none","HEATMAPMouseEnterStrokeWidth":"none","HEATMAPMouseLeaveDisplay":false,"HEATMAPMouseLeaveColor":"green","HEATMAPMouseLeaveOpacity":1,"HEATMAPMouseLeaveStrokeColor":"none","HEATMAPMouseLeaveStrokeWidth":"none","HEATMAPMouseMoveDisplay":false,"HEATMAPMouseMoveColor":"green","HEATMAPMouseMoveOpacity":1,"HEATMAPMouseMoveStrokeColor":"none","HEATMAPMouseMoveStrokeWidth":"none","HEATMAPMouseOutDisplay":true,"HEATMAPMouseOutAnimationTime":500,"HEATMAPMouseOutColor":"none","HEATMAPMouseOutOpacity":1,"HEATMAPMouseOutStrokeColor":"none","HEATMAPMouseOutStrokeWidth":"none","HEATMAPMouseUpDisplay":false,"HEATMAPMouseUpColor":"green","HEATMAPMouseUpOpacity":1,"HEATMAPMouseUpStrokeColor":"none","HEATMAPMouseUpStrokeWidth":"none","HEATMAPMouseOverDisplay":true,"HEATMAPMouseOverColor":"#FF0000","HEATMAPMouseOverOpacity":0.9,"HEATMAPMouseOverStrokeColor":"none","HEATMAPMouseOverStrokeWidth":"none","HEATMAPMouseOverTooltipsHtml01":"Chromosome: ","HEATMAPMouseOverTooltipsHtml02":"<br/>Start: ","HEATMAPMouseOverTooltipsHtml03":" End: ","HEATMAPMouseOverTooltipsHtml04":"<br/>","HEATMAPMouseOverTooltipsHtml05":"<br/>Value: ","HEATMAPMouseOverTooltipsHtml06":"","HEATMAPMouseOverTooltipsPosition":"absolute","HEATMAPMouseOverTooltipsBackgroundColor":"white","HEATMAPMouseOverTooltipsBorderStyle":"solid","HEATMAPMouseOverTooltipsBorderWidth":"1px","HEATMAPMouseOverTooltipsPadding":"3px","HEATMAPMouseOverTooltipsBorderRadius":"3px","HEATMAPMouseOverTooltipsOpacity":0.8,"LINKMouseEvent":true,"LINKMouseClickDisplay":false,"LINKMouseClickColor":"red","LINKMouseClickTextFromData":"fourth","LINKMouseClickTextOpacity":1,"LINKMouseClickTextColor":"red","LINKMouseClickTextSize":8,"LINKMouseClickTextPostionX":0,"LINKMouseClickTextPostionY":0,"LINKMouseClickTextDrag":true,"LINKMouseDownDisplay":false,"LINKMouseDownColor":"green","LINKMouseEnterDisplay":false,"LINKMouseEnterColor":"yellow","LINKMouseLeaveDisplay":false,"LINKMouseLeaveColor":"pink","LINKMouseMoveDisplay":false,"LINKMouseMoveColor":"red","LINKMouseOutDisplay":true,"LINKMouseOutAnimationTime":500,"LINKMouseOutStrokeColor":"none","LINKMouseUpDisplay":false,"LINKMouseUpColor":"grey","LINKMouseOverOpacity":0.9,"LINKMouseOverDisplay":true,"LINKMouseOverStrokeColor":"#FF00FF","LINKMouseOverTooltipsHtml01":"Fusion: ","LINKMouseOverTooltipsHtml02":"","LINKMouseOverStrokeWidth":5,"LINKMouseOutStrokeWidth":"none","LINKMouseOverTooltipsBorderWidth":"1px","LINEMouseEvent":true,"LINEMouseClickDisplay":false,"LINEMouseClickLineOpacity":1,"LINEMouseClickLineStrokeColor":"red","LINEMouseClickLineStrokeWidth":"none","LINEMouseDownDisplay":false,"LINEMouseDownLineOpacity":1,"LINEMouseDownLineStrokeColor":"red","LINEMouseDownLineStrokeWidth":"none","LINEMouseEnterDisplay":false,"LINEMouseEnterLineOpacity":1,"LINEMouseEnterLineStrokeColor":"red","LINEMouseEnterLineStrokeWidth":"none","LINEMouseLeaveDisplay":false,"LINEMouseLeaveLineOpacity":1,"LINEMouseLeaveLineStrokeColor":"red","LINEMouseLeaveLineStrokeWidth":"none","LINEMouseMoveDisplay":false,"LINEMouseMoveLineOpacity":1,"LINEMouseMoveLineStrokeColor":"red","LINEMouseMoveLineStrokeWidth":"none","LINEMouseOutDisplay":true,"LINEMouseOutAnimationTime":500,"LINEMouseOutLineOpacity":"none","LINEMouseOutLineStrokeColor":"none","LINEMouseOutLineStrokeWidth":"none","LINEMouseUpDisplay":false,"LINEMouseUpLineOpacity":1,"LINEMouseUpLineStrokeColor":"red","LINEMouseUpLineStrokeWidth":"none","LINEMouseOverDisplay":true,"LINEMouseOverLineOpacity":1,"LINEMouseOverLineStrokeColor":"#FF0000","LINEMouseOverLineStrokeWidth":"none","LINEMouseOverTooltipsHtml01":"Line","LINEMouseOverTooltipsPosition":"absolute","LINEMouseOverTooltipsBackgroundColor":"white","LINEMouseOverTooltipsBorderStyle":"solid","LINEMouseOverTooltipsBorderWidth":0,"LINEMouseOverTooltipsPadding":"3px","LINEMouseOverTooltipsBorderRadius":"3px","LINEMouseOverTooltipsOpacity":0.8,"CNVMouseEvent":true,"CNVMouseClickDisplay":false,"CNVMouseClickColor":"red","CNVMouseClickArcOpacity":1,"CNVMouseClickArcStrokeColor":"#F26223","CNVMouseClickArcStrokeWidth":0,"CNVMouseClickTextFromData":"fourth","CNVMouseClickTextOpacity":1,"CNVMouseClickTextColor":"red","CNVMouseClickTextSize":8,"CNVMouseClickTextPostionX":0,"CNVMouseClickTextPostionY":0,"CNVMouseClickTextDrag":true,"CNVMouseDownDisplay":false,"CNVMouseDownColor":"green","CNVMouseDownArcOpacity":1,"CNVMouseDownArcStrokeColor":"#F26223","CNVMouseDownArcStrokeWidth":0,"CNVMouseEnterDisplay":false,"CNVMouseEnterColor":"yellow","CNVMouseEnterArcOpacity":1,"CNVMouseEnterArcStrokeColor":"#F26223","CNVMouseEnterArcStrokeWidth":0,"CNVMouseLeaveDisplay":false,"CNVMouseLeaveColor":"pink","CNVMouseLeaveArcOpacity":1,"CNVMouseLeaveArcStrokeColor":"#F26223","CNVMouseLeaveArcStrokeWidth":0,"CNVMouseMoveDisplay":false,"CNVMouseMoveColor":"red","CNVMouseMoveArcOpacity":1,"CNVMouseMoveArcStrokeColor":"#F26223","CNVMouseMoveArcStrokeWidth":0,"CNVMouseOutDisplay":true,"CNVMouseOutAnimationTime":500,"CNVMouseOutColor":"none","CNVMouseOutArcOpacity":1,"CNVMouseOutArcStrokeColor":"none","CNVMouseOutArcStrokeWidth":0,"CNVMouseUpDisplay":false,"CNVMouseUpColor":"grey","CNVMouseUpArcOpacity":1,"CNVMouseUpArcStrokeColor":"#F26223","CNVMouseUpArcStrokeWidth":0,"CNVMouseOverDisplay":true,"CNVMouseOverColor":"#FF0000","CNVMouseOverArcOpacity":0.9,"CNVMouseOverArcStrokeColor":"#F26223","CNVMouseOverArcStrokeWidth":3,"CNVMouseOverTooltipsHtml01":"Chromosome: ","CNVMouseOverTooltipsHtml02":"<br>Start: ","CNVMouseOverTooltipsHtml03":"<br>End: ","CNVMouseOverTooltipsHtml04":"<br>Value: ","CNVMouseOverTooltipsHtml05":"","CNVMouseOverTooltipsPosition":"absolute","CNVMouseOverTooltipsBackgroundColor":"white","CNVMouseOverTooltipsBorderStyle":"solid","CNVMouseOverTooltipsBorderWidth":"1px","CNVMouseOverTooltipsPadding":"3px","CNVMouseOverTooltipsBorderRadius":"3px","CNVMouseOverTooltipsOpacity":0.8},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="e06" class="section level2">
+<h2>E06</h2>
+<div class="BioCircos html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d701554a25665d09d09f" style="width:576px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-d701554a25665d09d09f">{"x":{"message":["function (..., domain = NULL, appendLF = TRUE) ","{","    cond <- if (...length() == 1L && inherits(..1, \"condition\")) {","        if (nargs() > 1L) ","            warning(\"additional arguments ignored in message()\")","        ..1","    }","    else {","        msg <- .makeMessage(..., domain = domain, appendLF = appendLF)","        call <- sys.call()","        simpleMessage(msg, call)","    }","    defaultHandler <- function(c) {","        cat(conditionMessage(c), file = stderr(), sep = \"\")","    }","    withRestarts({","        signalCondition(cond)","        defaultHandler(cond)","    }, muffleMessage = function() NULL)","    invisible()","}"],"tracklist":[["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"#CC0000","CNVwidth":2,"range":[0,6]},[{"chr":"15","start":"66000001","end":"75000000","value":"1"},{"chr":"15","start":"86000001","end":"94000000","value":"1"},{"chr":"1","start":"17000001","end":"70000000","value":"1"},{"chr":"1","start":"3000001","end":"12000000","value":"1"},{"chr":"22","start":"25000001","end":"51000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"blue","CNVwidth":2,"range":[0,6]},[{"chr":"11","start":"5000001","end":"48000000","value":"2"},{"chr":"11","start":"56000001","end":"63000000","value":"2"},{"chr":"11","start":"64000001","end":"67000000","value":"2"},{"chr":"11","start":"72000001","end":"89000000","value":"2"},{"chr":"11","start":"91000001","end":"135000000","value":"2"},{"chr":"12","start":"10000001","end":"31000000","value":"2"},{"chr":"12","start":"1","end":"8000000","value":"2"},{"chr":"12","start":"39000001","end":"63000000","value":"2"},{"chr":"12","start":"64000001","end":"117000000","value":"2"},{"chr":"13","start":"20000001","end":"52000000","value":"2"},{"chr":"13","start":"53000001","end":"111000000","value":"2"},{"chr":"14","start":"20000001","end":"105000000","value":"2"},{"chr":"15","start":"33000001","end":"43000000","value":"2"},{"chr":"15","start":"44000001","end":"75000000","value":"2"},{"chr":"15","start":"86000001","end":"101000000","value":"2"},{"chr":"17","start":"1000001","end":"3000000","value":"2"},{"chr":"17","start":"31000001","end":"36000000","value":"2"},{"chr":"17","start":"39000001","end":"43000000","value":"2"},{"chr":"17","start":"4000001","end":"15000000","value":"2"},{"chr":"17","start":"48000001","end":"62000000","value":"2"},{"chr":"17","start":"65000001","end":"83000000","value":"2"},{"chr":"19","start":"1000001","end":"20000000","value":"2"},{"chr":"19","start":"29000001","end":"42000000","value":"2"},{"chr":"19","start":"44000001","end":"54000000","value":"2"},{"chr":"19","start":"55000001","end":"59000000","value":"2"},{"chr":"1","start":"109000001","end":"120000000","value":"2"},{"chr":"1","start":"150000001","end":"161000000","value":"2"},{"chr":"1","start":"162000001","end":"206000000","value":"2"},{"chr":"1","start":"17000001","end":"83000000","value":"2"},{"chr":"1","start":"207000001","end":"223000000","value":"2"},{"chr":"1","start":"229000001","end":"242000000","value":"2"},{"chr":"1","start":"3000001","end":"12000000","value":"2"},{"chr":"1","start":"84000001","end":"103000000","value":"2"},{"chr":"20","start":"1","end":"25000000","value":"2"},{"chr":"20","start":"32000001","end":"64000000","value":"2"},{"chr":"22","start":"25000001","end":"51000000","value":"2"},{"chr":"2","start":"133000001","end":"242000000","value":"2"},{"chr":"3","start":"131000001","end":"195000000","value":"2"},{"chr":"3","start":"1","end":"75000000","value":"2"},{"chr":"3","start":"95000001","end":"125000000","value":"2"},{"chr":"4","start":"10000001","end":"48000000","value":"2"},{"chr":"4","start":"103000001","end":"118000000","value":"2"},{"chr":"4","start":"145000001","end":"189000000","value":"2"},{"chr":"4","start":"52000001","end":"69000000","value":"2"},{"chr":"4","start":"70000001","end":"102000000","value":"2"},{"chr":"5","start":"101000001","end":"176000000","value":"2"},{"chr":"5","start":"35000001","end":"45000000","value":"2"},{"chr":"5","start":"52000001","end":"69000000","value":"2"},{"chr":"5","start":"72000001","end":"99000000","value":"2"},{"chr":"6","start":"1000001","end":"26000000","value":"2"},{"chr":"6","start":"27000001","end":"57000000","value":"2"},{"chr":"6","start":"63000001","end":"86000000","value":"2"},{"chr":"6","start":"87000001","end":"167000000","value":"2"},{"chr":"7","start":"104000001","end":"128000000","value":"2"},{"chr":"7","start":"36000001","end":"45000000","value":"2"},{"chr":"7","start":"7000001","end":"32000000","value":"2"},{"chr":"7","start":"78000001","end":"97000000","value":"2"},{"chr":"8","start":"13000001","end":"26000000","value":"2"},{"chr":"8","start":"37000001","end":"43000000","value":"2"},{"chr":"9","start":"1000001","end":"33000000","value":"2"},{"chr":"9","start":"34000001","end":"38000000","value":"2"},{"chr":"9","start":"69000001","end":"94000000","value":"2"},{"chr":"9","start":"95000001","end":"138000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}],["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"pink","CNVwidth":2,"range":[0,6]},[{"chr":"13","start":"93000001","end":"111000000","value":"1"},{"chr":"19","start":"1000001","end":"20000000","value":"1"},{"chr":"19","start":"29000001","end":"42000000","value":"1"},{"chr":"19","start":"44000001","end":"54000000","value":"1"},{"chr":"19","start":"55000001","end":"59000000","value":"1"},{"chr":"4","start":"175000001","end":"189000000","value":"1"},{"chr":"5","start":"1000001","end":"17000000","value":"1"},{"chr":"8","start":"30000001","end":"43000000","value":"1"},{"chr":"8","start":"48000001","end":"75000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"lightblue","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"1000001","end":"37000000","value":"2"},{"chr":"10","start":"43000001","end":"45000000","value":"2"},{"chr":"10","start":"51000001","end":"79000000","value":"2"},{"chr":"10","start":"80000001","end":"87000000","value":"2"},{"chr":"10","start":"88000001","end":"133000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}]],"genome":{"1":248956422,"2":242193529,"3":198295559,"4":190214555,"5":181538259,"6":170805979,"7":159345973,"8":145138636,"9":138394717,"10":133797422,"11":135086622,"12":133275309,"13":114364328,"14":107043718,"15":101991189,"16":90338345,"17":83257441,"18":80373285,"19":58617616,"20":64444167,"21":46709983,"22":50818468,"X":156040895,"Y":57227415},"genomeFillColor":["#FFFFE5","#FFFCD8","#FFFACC","#FFF7BF","#FEF2B2","#FEECA5","#FEE698","#FEDE88","#FED574","#FECC60","#FEC24D","#FEB541","#FEA736","#FE9A2A","#F98E23","#F3811D","#EE7516","#E66910","#DC5E0B","#D25305","#C64902","#B23F02","#9F3603","#8C2D04"],"chrPad":0.04,"displayGenomeBorder":true,"genomeBorderColor":"#000","genomeBorderSize":0.5,"genomeTicksDisplay":false,"genomeTicksLen":5,"genomeTicksColor":"#000","genomeTicksTextSize":"0.6em","genomeTicksTextColor":"#000","genomeTicksScale":30000000,"genomeLabelDisplay":true,"genomeLabelTextSize":"10pt","genomeLabelTextColor":"#000","genomeLabelDx":0,"genomeLabelDy":0,"genomeLabelOrientation":0,"SNPMouseEvent":true,"SNPMouseClickDisplay":false,"SNPMouseClickColor":"red","SNPMouseClickCircleSize":4,"SNPMouseClickCircleOpacity":1,"SNPMouseClickCircleStrokeColor":"#F26223","SNPMouseClickCircleStrokeWidth":0,"SNPMouseClickTextFromData":"fourth","SNPMouseClickTextOpacity":1,"SNPMouseClickTextColor":"red","SNPMouseClickTextSize":8,"SNPMouseClickTextPostionX":1,"SNPMouseClickTextPostionY":10,"SNPMouseClickTextDrag":true,"SNPMouseDownDisplay":false,"SNPMouseDownColor":"green","SNPMouseDownCircleSize":4,"SNPMouseDownCircleOpacity":1,"SNPMouseDownCircleStrokeColor":"#F26223","SNPMouseDownCircleStrokeWidth":0,"SNPMouseEnterDisplay":false,"SNPMouseEnterColor":"yellow","SNPMouseEnterCircleSize":4,"SNPMouseEnterCircleOpacity":1,"SNPMouseEnterCircleStrokeColor":"#F26223","SNPMouseEnterCircleStrokeWidth":0,"SNPMouseLeaveDisplay":false,"SNPMouseLeaveColor":"pink","SNPMouseLeaveCircleSize":4,"SNPMouseLeaveCircleOpacity":1,"SNPMouseLeaveCircleStrokeColor":"#F26223","SNPMouseLeaveCircleStrokeWidth":0,"SNPMouseMoveDisplay":false,"SNPMouseMoveColor":"red","SNPMouseMoveCircleSize":2,"SNPMouseMoveCircleOpacity":1,"SNPMouseMoveCircleStrokeColor":"#F26223","SNPMouseMoveCircleStrokeWidth":0,"SNPMouseOutDisplay":true,"SNPMouseOutAnimationTime":500,"SNPMouseOutColor":"none","SNPMouseOutCircleSize":2,"SNPMouseOutCircleOpacity":"none","SNPMouseOutCircleStrokeColor":"red","SNPMouseOutCircleStrokeWidth":0,"SNPMouseUpDisplay":false,"SNPMouseUpColor":"grey","SNPMouseUpCircleSize":4,"SNPMouseUpCircleOpacity":1,"SNPMouseUpCircleStrokeColor":"#F26223","SNPMouseUpCircleStrokeWidth":0,"SNPMouseOverDisplay":true,"SNPMouseOverColor":"#FF0000","SNPMouseOverCircleSize":3,"SNPMouseOverCircleOpacity":0.9,"SNPMouseOverCircleStrokeColor":"#F26223","SNPMouseOverCircleStrokeWidth":1,"SNPMouseOverTooltipsHtml01":"Chromosome: ","SNPMouseOverTooltipsHtml02":"<br/>Position: ","SNPMouseOverTooltipsHtml03":"<br/>Value: ","SNPMouseOverTooltipsHtml04":"<br/>","SNPMouseOverTooltipsHtml05":"","SNPMouseOverTooltipsBorderWidth":"1px","zoom":true,"TEXTModuleDragEvent":false,"ARCMouseEvent":true,"ARCMouseClickDisplay":false,"ARCMouseClickColor":"red","ARCMouseClickArcOpacity":1,"ARCMouseClickArcStrokeColor":"#F26223","ARCMouseClickArcStrokeWidth":1,"ARCMouseClickTextFromData":"fourth","ARCMouseClickTextOpacity":1,"ARCMouseClickTextColor":"red","ARCMouseClickTextSize":8,"ARCMouseClickTextPostionX":0,"ARCMouseClickTextPostionY":0,"ARCMouseClickTextDrag":true,"ARCMouseDownDisplay":false,"ARCMouseDownColor":"green","ARCMouseDownArcOpacity":1,"ARCMouseDownArcStrokeColor":"#F26223","ARCMouseDownArcStrokeWidth":0,"ARCMouseEnterDisplay":false,"ARCMouseEnterColor":"yellow","ARCMouseEnterArcOpacity":1,"ARCMouseEnterArcStrokeColor":"#F26223","ARCMouseEnterArcStrokeWidth":0,"ARCMouseLeaveDisplay":false,"ARCMouseLeaveColor":"pink","ARCMouseLeaveArcOpacity":1,"ARCMouseLeaveArcStrokeColor":"#F26223","ARCMouseLeaveArcStrokeWidth":0,"ARCMouseMoveDisplay":false,"ARCMouseMoveColor":"red","ARCMouseMoveArcOpacity":1,"ARCMouseMoveArcStrokeColor":"#F26223","ARCMouseMoveArcStrokeWidth":0,"ARCMouseOutDisplay":true,"ARCMouseOutAnimationTime":500,"ARCMouseOutColor":"none","ARCMouseOutArcOpacity":"none","ARCMouseOutArcStrokeColor":"red","ARCMouseOutArcStrokeWidth":0,"ARCMouseUpDisplay":false,"ARCMouseUpColor":"grey","ARCMouseUpArcOpacity":1,"ARCMouseUpArcStrokeColor":"#F26223","ARCMouseUpArcStrokeWidth":0,"ARCMouseOverDisplay":true,"ARCMouseOverColor":"#FF0000","ARCMouseOverArcOpacity":0.9,"ARCMouseOverArcStrokeColor":"#F26223","ARCMouseOverArcStrokeWidth":3,"ARCMouseOverTooltipsHtml01":"Chromosome: ","ARCMouseOverTooltipsHtml02":"<br/>Start: ","ARCMouseOverTooltipsHtml03":"<br/>End: ","ARCMouseOverTooltipsHtml04":"<br/>","ARCMouseOverTooltipsHtml05":"","ARCMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseEvent":true,"HISTOGRAMMouseClickDisplay":false,"HISTOGRAMMouseClickColor":"red","HISTOGRAMMouseClickOpacity":1,"HISTOGRAMMouseClickStrokeColor":"none","HISTOGRAMMouseClickStrokeWidth":"none","HISTOGRAMMouseDownDisplay":false,"HISTOGRAMMouseDownColor":"red","HISTOGRAMMouseDownOpacity":1,"HISTOGRAMMouseDownStrokeColor":"none","HISTOGRAMMouseDownStrokeWidth":"none","HISTOGRAMMouseEnterDisplay":false,"HISTOGRAMMouseEnterColor":"red","HISTOGRAMMouseEnterOpacity":1,"HISTOGRAMMouseEnterStrokeColor":"none","HISTOGRAMMouseEnterStrokeWidth":"none","HISTOGRAMMouseLeaveDisplay":false,"HISTOGRAMMouseLeaveColor":"red","HISTOGRAMMouseLeaveOpacity":1,"HISTOGRAMMouseLeaveStrokeColor":"none","HISTOGRAMMouseLeaveStrokeWidth":"none","HISTOGRAMMouseMoveDisplay":false,"HISTOGRAMMouseMoveColor":"red","HISTOGRAMMouseMoveOpacity":1,"HISTOGRAMMouseMoveStrokeColor":"none","HISTOGRAMMouseMoveStrokeWidth":"none","HISTOGRAMMouseOutDisplay":true,"HISTOGRAMMouseOutAnimationTime":500,"HISTOGRAMMouseOutColor":"none","HISTOGRAMMouseOutOpacity":1,"HISTOGRAMMouseOutStrokeColor":"none","HISTOGRAMMouseOutStrokeWidth":"none","HISTOGRAMMouseUpDisplay":false,"HISTOGRAMMouseUpColor":"red","HISTOGRAMMouseUpOpacity":1,"HISTOGRAMMouseUpStrokeColor":"none","HISTOGRAMMouseUpStrokeWidth":"none","HISTOGRAMMouseOverDisplay":true,"HISTOGRAMMouseOverColor":"#FF0000","HISTOGRAMMouseOverOpacity":0.9,"HISTOGRAMMouseOverStrokeColor":"none","HISTOGRAMMouseOverStrokeWidth":"none","HISTOGRAMMouseOverTooltipsHtml01":"Chromosome: ","HISTOGRAMMouseOverTooltipsHtml02":"<br/>Start: ","HISTOGRAMMouseOverTooltipsHtml03":" End: ","HISTOGRAMMouseOverTooltipsHtml04":"<br/>","HISTOGRAMMouseOverTooltipsHtml05":"<br/>Value: ","HISTOGRAMMouseOverTooltipsHtml06":"","HISTOGRAMMouseOverTooltipsPosition":"absolute","HISTOGRAMMouseOverTooltipsBackgroundColor":"white","HISTOGRAMMouseOverTooltipsBorderStyle":"solid","HISTOGRAMMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseOverTooltipsPadding":"3px","HISTOGRAMMouseOverTooltipsBorderRadius":"3px","HISTOGRAMMouseOverTooltipsOpacity":0.8,"HEATMAPMouseEvent":true,"HEATMAPMouseClickDisplay":false,"HEATMAPMouseClickColor":"green","HEATMAPMouseClickOpacity":1,"HEATMAPMouseClickStrokeColor":"none","HEATMAPMouseClickStrokeWidth":"none","HEATMAPMouseDownDisplay":false,"HEATMAPMouseDownColor":"green","HEATMAPMouseDownOpacity":1,"HEATMAPMouseDownStrokeColor":"none","HEATMAPMouseDownStrokeWidth":"none","HEATMAPMouseEnterDisplay":false,"HEATMAPMouseEnterColor":"green","HEATMAPMouseEnterOpacity":1,"HEATMAPMouseEnterStrokeColor":"none","HEATMAPMouseEnterStrokeWidth":"none","HEATMAPMouseLeaveDisplay":false,"HEATMAPMouseLeaveColor":"green","HEATMAPMouseLeaveOpacity":1,"HEATMAPMouseLeaveStrokeColor":"none","HEATMAPMouseLeaveStrokeWidth":"none","HEATMAPMouseMoveDisplay":false,"HEATMAPMouseMoveColor":"green","HEATMAPMouseMoveOpacity":1,"HEATMAPMouseMoveStrokeColor":"none","HEATMAPMouseMoveStrokeWidth":"none","HEATMAPMouseOutDisplay":true,"HEATMAPMouseOutAnimationTime":500,"HEATMAPMouseOutColor":"none","HEATMAPMouseOutOpacity":1,"HEATMAPMouseOutStrokeColor":"none","HEATMAPMouseOutStrokeWidth":"none","HEATMAPMouseUpDisplay":false,"HEATMAPMouseUpColor":"green","HEATMAPMouseUpOpacity":1,"HEATMAPMouseUpStrokeColor":"none","HEATMAPMouseUpStrokeWidth":"none","HEATMAPMouseOverDisplay":true,"HEATMAPMouseOverColor":"#FF0000","HEATMAPMouseOverOpacity":0.9,"HEATMAPMouseOverStrokeColor":"none","HEATMAPMouseOverStrokeWidth":"none","HEATMAPMouseOverTooltipsHtml01":"Chromosome: ","HEATMAPMouseOverTooltipsHtml02":"<br/>Start: ","HEATMAPMouseOverTooltipsHtml03":" End: ","HEATMAPMouseOverTooltipsHtml04":"<br/>","HEATMAPMouseOverTooltipsHtml05":"<br/>Value: ","HEATMAPMouseOverTooltipsHtml06":"","HEATMAPMouseOverTooltipsPosition":"absolute","HEATMAPMouseOverTooltipsBackgroundColor":"white","HEATMAPMouseOverTooltipsBorderStyle":"solid","HEATMAPMouseOverTooltipsBorderWidth":"1px","HEATMAPMouseOverTooltipsPadding":"3px","HEATMAPMouseOverTooltipsBorderRadius":"3px","HEATMAPMouseOverTooltipsOpacity":0.8,"LINKMouseEvent":true,"LINKMouseClickDisplay":false,"LINKMouseClickColor":"red","LINKMouseClickTextFromData":"fourth","LINKMouseClickTextOpacity":1,"LINKMouseClickTextColor":"red","LINKMouseClickTextSize":8,"LINKMouseClickTextPostionX":0,"LINKMouseClickTextPostionY":0,"LINKMouseClickTextDrag":true,"LINKMouseDownDisplay":false,"LINKMouseDownColor":"green","LINKMouseEnterDisplay":false,"LINKMouseEnterColor":"yellow","LINKMouseLeaveDisplay":false,"LINKMouseLeaveColor":"pink","LINKMouseMoveDisplay":false,"LINKMouseMoveColor":"red","LINKMouseOutDisplay":true,"LINKMouseOutAnimationTime":500,"LINKMouseOutStrokeColor":"none","LINKMouseUpDisplay":false,"LINKMouseUpColor":"grey","LINKMouseOverOpacity":0.9,"LINKMouseOverDisplay":true,"LINKMouseOverStrokeColor":"#FF00FF","LINKMouseOverTooltipsHtml01":"Fusion: ","LINKMouseOverTooltipsHtml02":"","LINKMouseOverStrokeWidth":5,"LINKMouseOutStrokeWidth":"none","LINKMouseOverTooltipsBorderWidth":"1px","LINEMouseEvent":true,"LINEMouseClickDisplay":false,"LINEMouseClickLineOpacity":1,"LINEMouseClickLineStrokeColor":"red","LINEMouseClickLineStrokeWidth":"none","LINEMouseDownDisplay":false,"LINEMouseDownLineOpacity":1,"LINEMouseDownLineStrokeColor":"red","LINEMouseDownLineStrokeWidth":"none","LINEMouseEnterDisplay":false,"LINEMouseEnterLineOpacity":1,"LINEMouseEnterLineStrokeColor":"red","LINEMouseEnterLineStrokeWidth":"none","LINEMouseLeaveDisplay":false,"LINEMouseLeaveLineOpacity":1,"LINEMouseLeaveLineStrokeColor":"red","LINEMouseLeaveLineStrokeWidth":"none","LINEMouseMoveDisplay":false,"LINEMouseMoveLineOpacity":1,"LINEMouseMoveLineStrokeColor":"red","LINEMouseMoveLineStrokeWidth":"none","LINEMouseOutDisplay":true,"LINEMouseOutAnimationTime":500,"LINEMouseOutLineOpacity":"none","LINEMouseOutLineStrokeColor":"none","LINEMouseOutLineStrokeWidth":"none","LINEMouseUpDisplay":false,"LINEMouseUpLineOpacity":1,"LINEMouseUpLineStrokeColor":"red","LINEMouseUpLineStrokeWidth":"none","LINEMouseOverDisplay":true,"LINEMouseOverLineOpacity":1,"LINEMouseOverLineStrokeColor":"#FF0000","LINEMouseOverLineStrokeWidth":"none","LINEMouseOverTooltipsHtml01":"Line","LINEMouseOverTooltipsPosition":"absolute","LINEMouseOverTooltipsBackgroundColor":"white","LINEMouseOverTooltipsBorderStyle":"solid","LINEMouseOverTooltipsBorderWidth":0,"LINEMouseOverTooltipsPadding":"3px","LINEMouseOverTooltipsBorderRadius":"3px","LINEMouseOverTooltipsOpacity":0.8,"CNVMouseEvent":true,"CNVMouseClickDisplay":false,"CNVMouseClickColor":"red","CNVMouseClickArcOpacity":1,"CNVMouseClickArcStrokeColor":"#F26223","CNVMouseClickArcStrokeWidth":0,"CNVMouseClickTextFromData":"fourth","CNVMouseClickTextOpacity":1,"CNVMouseClickTextColor":"red","CNVMouseClickTextSize":8,"CNVMouseClickTextPostionX":0,"CNVMouseClickTextPostionY":0,"CNVMouseClickTextDrag":true,"CNVMouseDownDisplay":false,"CNVMouseDownColor":"green","CNVMouseDownArcOpacity":1,"CNVMouseDownArcStrokeColor":"#F26223","CNVMouseDownArcStrokeWidth":0,"CNVMouseEnterDisplay":false,"CNVMouseEnterColor":"yellow","CNVMouseEnterArcOpacity":1,"CNVMouseEnterArcStrokeColor":"#F26223","CNVMouseEnterArcStrokeWidth":0,"CNVMouseLeaveDisplay":false,"CNVMouseLeaveColor":"pink","CNVMouseLeaveArcOpacity":1,"CNVMouseLeaveArcStrokeColor":"#F26223","CNVMouseLeaveArcStrokeWidth":0,"CNVMouseMoveDisplay":false,"CNVMouseMoveColor":"red","CNVMouseMoveArcOpacity":1,"CNVMouseMoveArcStrokeColor":"#F26223","CNVMouseMoveArcStrokeWidth":0,"CNVMouseOutDisplay":true,"CNVMouseOutAnimationTime":500,"CNVMouseOutColor":"none","CNVMouseOutArcOpacity":1,"CNVMouseOutArcStrokeColor":"none","CNVMouseOutArcStrokeWidth":0,"CNVMouseUpDisplay":false,"CNVMouseUpColor":"grey","CNVMouseUpArcOpacity":1,"CNVMouseUpArcStrokeColor":"#F26223","CNVMouseUpArcStrokeWidth":0,"CNVMouseOverDisplay":true,"CNVMouseOverColor":"#FF0000","CNVMouseOverArcOpacity":0.9,"CNVMouseOverArcStrokeColor":"#F26223","CNVMouseOverArcStrokeWidth":3,"CNVMouseOverTooltipsHtml01":"Chromosome: ","CNVMouseOverTooltipsHtml02":"<br>Start: ","CNVMouseOverTooltipsHtml03":"<br>End: ","CNVMouseOverTooltipsHtml04":"<br>Value: ","CNVMouseOverTooltipsHtml05":"","CNVMouseOverTooltipsPosition":"absolute","CNVMouseOverTooltipsBackgroundColor":"white","CNVMouseOverTooltipsBorderStyle":"solid","CNVMouseOverTooltipsBorderWidth":"1px","CNVMouseOverTooltipsPadding":"3px","CNVMouseOverTooltipsBorderRadius":"3px","CNVMouseOverTooltipsOpacity":0.8},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="e23" class="section level2">
+<h2>E23</h2>
+<div class="BioCircos html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-27a6251d00cbd347f90b" style="width:576px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-27a6251d00cbd347f90b">{"x":{"message":["function (..., domain = NULL, appendLF = TRUE) ","{","    cond <- if (...length() == 1L && inherits(..1, \"condition\")) {","        if (nargs() > 1L) ","            warning(\"additional arguments ignored in message()\")","        ..1","    }","    else {","        msg <- .makeMessage(..., domain = domain, appendLF = appendLF)","        call <- sys.call()","        simpleMessage(msg, call)","    }","    defaultHandler <- function(c) {","        cat(conditionMessage(c), file = stderr(), sep = \"\")","    }","    withRestarts({","        signalCondition(cond)","        defaultHandler(cond)","    }, muffleMessage = function() NULL)","    invisible()","}"],"tracklist":[["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"#CC0000","CNVwidth":2,"range":[0,6]},[{"chr":"12","start":"106000001","end":"133000000","value":"1"},{"chr":"16","start":"1","end":"2000000","value":"1"},{"chr":"16","start":"3000001","end":"14000000","value":"1"},{"chr":"16","start":"47000001","end":"70000000","value":"1"},{"chr":"16","start":"72000001","end":"88000000","value":"1"},{"chr":"1","start":"17000001","end":"49000000","value":"1"},{"chr":"1","start":"3000001","end":"12000000","value":"1"},{"chr":"20","start":"1","end":"25000000","value":"1"},{"chr":"20","start":"32000001","end":"64000000","value":"1"},{"chr":"22","start":"25000001","end":"51000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"blue","CNVwidth":2,"range":[0,6]},[{"chr":"11","start":"112000001","end":"135000000","value":"2"},{"chr":"11","start":"5000001","end":"48000000","value":"2"},{"chr":"11","start":"56000001","end":"63000000","value":"2"},{"chr":"11","start":"64000001","end":"67000000","value":"2"},{"chr":"11","start":"72000001","end":"89000000","value":"2"},{"chr":"12","start":"10000001","end":"31000000","value":"2"},{"chr":"12","start":"1","end":"8000000","value":"2"},{"chr":"12","start":"39000001","end":"63000000","value":"2"},{"chr":"12","start":"64000001","end":"133000000","value":"2"},{"chr":"14","start":"94000001","end":"105000000","value":"2"},{"chr":"20","start":"57000001","end":"64000000","value":"2"},{"chr":"2","start":"1","end":"24000000","value":"2"},{"chr":"7","start":"104000001","end":"128000000","value":"2"},{"chr":"7","start":"129000001","end":"143000000","value":"2"},{"chr":"7","start":"154000001","end":"159000000","value":"2"},{"chr":"7","start":"36000001","end":"45000000","value":"2"},{"chr":"7","start":"7000001","end":"32000000","value":"2"},{"chr":"7","start":"78000001","end":"97000000","value":"2"},{"chr":"8","start":"127000001","end":"145000000","value":"2"},{"chr":"9","start":"113000001","end":"138000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}],["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"pink","CNVwidth":2,"range":[0,6]},[{"chr":"12","start":"10000001","end":"31000000","value":"1"},{"chr":"12","start":"1","end":"8000000","value":"1"},{"chr":"12","start":"32000001","end":"33000000","value":"1"},{"chr":"12","start":"39000001","end":"63000000","value":"1"},{"chr":"12","start":"64000001","end":"106000000","value":"1"},{"chr":"19","start":"1000001","end":"20000000","value":"1"},{"chr":"19","start":"29000001","end":"42000000","value":"1"},{"chr":"19","start":"44000001","end":"54000000","value":"1"},{"chr":"19","start":"55000001","end":"59000000","value":"1"},{"chr":"21","start":"14000001","end":"43000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"lightblue","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"102000001","end":"133000000","value":"2"},{"chr":"10","start":"7000001","end":"37000000","value":"2"},{"chr":"17","start":"1000001","end":"3000000","value":"2"},{"chr":"17","start":"17000001","end":"18000000","value":"2"},{"chr":"17","start":"28000001","end":"30000000","value":"2"},{"chr":"17","start":"31000001","end":"36000000","value":"2"},{"chr":"17","start":"39000001","end":"43000000","value":"2"},{"chr":"17","start":"4000001","end":"15000000","value":"2"},{"chr":"17","start":"44000001","end":"45000000","value":"2"},{"chr":"17","start":"48000001","end":"62000000","value":"2"},{"chr":"17","start":"65000001","end":"83000000","value":"2"},{"chr":"18","start":"1000001","end":"14000000","value":"2"},{"chr":"18","start":"22000001","end":"32000000","value":"2"},{"chr":"19","start":"1000001","end":"20000000","value":"2"},{"chr":"19","start":"29000001","end":"42000000","value":"2"},{"chr":"19","start":"44000001","end":"54000000","value":"2"},{"chr":"19","start":"55000001","end":"59000000","value":"2"},{"chr":"1","start":"1000001","end":"2000000","value":"2"},{"chr":"1","start":"17000001","end":"53000000","value":"2"},{"chr":"1","start":"3000001","end":"12000000","value":"2"},{"chr":"22","start":"19000001","end":"21000000","value":"2"},{"chr":"22","start":"25000001","end":"51000000","value":"2"},{"chr":"6","start":"151000001","end":"167000000","value":"2"},{"chr":"9","start":"18000001","end":"33000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}]],"genome":{"1":248956422,"2":242193529,"3":198295559,"4":190214555,"5":181538259,"6":170805979,"7":159345973,"8":145138636,"9":138394717,"10":133797422,"11":135086622,"12":133275309,"13":114364328,"14":107043718,"15":101991189,"16":90338345,"17":83257441,"18":80373285,"19":58617616,"20":64444167,"21":46709983,"22":50818468,"X":156040895,"Y":57227415},"genomeFillColor":["#FFFFE5","#FFFCD8","#FFFACC","#FFF7BF","#FEF2B2","#FEECA5","#FEE698","#FEDE88","#FED574","#FECC60","#FEC24D","#FEB541","#FEA736","#FE9A2A","#F98E23","#F3811D","#EE7516","#E66910","#DC5E0B","#D25305","#C64902","#B23F02","#9F3603","#8C2D04"],"chrPad":0.04,"displayGenomeBorder":true,"genomeBorderColor":"#000","genomeBorderSize":0.5,"genomeTicksDisplay":false,"genomeTicksLen":5,"genomeTicksColor":"#000","genomeTicksTextSize":"0.6em","genomeTicksTextColor":"#000","genomeTicksScale":30000000,"genomeLabelDisplay":true,"genomeLabelTextSize":"10pt","genomeLabelTextColor":"#000","genomeLabelDx":0,"genomeLabelDy":0,"genomeLabelOrientation":0,"SNPMouseEvent":true,"SNPMouseClickDisplay":false,"SNPMouseClickColor":"red","SNPMouseClickCircleSize":4,"SNPMouseClickCircleOpacity":1,"SNPMouseClickCircleStrokeColor":"#F26223","SNPMouseClickCircleStrokeWidth":0,"SNPMouseClickTextFromData":"fourth","SNPMouseClickTextOpacity":1,"SNPMouseClickTextColor":"red","SNPMouseClickTextSize":8,"SNPMouseClickTextPostionX":1,"SNPMouseClickTextPostionY":10,"SNPMouseClickTextDrag":true,"SNPMouseDownDisplay":false,"SNPMouseDownColor":"green","SNPMouseDownCircleSize":4,"SNPMouseDownCircleOpacity":1,"SNPMouseDownCircleStrokeColor":"#F26223","SNPMouseDownCircleStrokeWidth":0,"SNPMouseEnterDisplay":false,"SNPMouseEnterColor":"yellow","SNPMouseEnterCircleSize":4,"SNPMouseEnterCircleOpacity":1,"SNPMouseEnterCircleStrokeColor":"#F26223","SNPMouseEnterCircleStrokeWidth":0,"SNPMouseLeaveDisplay":false,"SNPMouseLeaveColor":"pink","SNPMouseLeaveCircleSize":4,"SNPMouseLeaveCircleOpacity":1,"SNPMouseLeaveCircleStrokeColor":"#F26223","SNPMouseLeaveCircleStrokeWidth":0,"SNPMouseMoveDisplay":false,"SNPMouseMoveColor":"red","SNPMouseMoveCircleSize":2,"SNPMouseMoveCircleOpacity":1,"SNPMouseMoveCircleStrokeColor":"#F26223","SNPMouseMoveCircleStrokeWidth":0,"SNPMouseOutDisplay":true,"SNPMouseOutAnimationTime":500,"SNPMouseOutColor":"none","SNPMouseOutCircleSize":2,"SNPMouseOutCircleOpacity":"none","SNPMouseOutCircleStrokeColor":"red","SNPMouseOutCircleStrokeWidth":0,"SNPMouseUpDisplay":false,"SNPMouseUpColor":"grey","SNPMouseUpCircleSize":4,"SNPMouseUpCircleOpacity":1,"SNPMouseUpCircleStrokeColor":"#F26223","SNPMouseUpCircleStrokeWidth":0,"SNPMouseOverDisplay":true,"SNPMouseOverColor":"#FF0000","SNPMouseOverCircleSize":3,"SNPMouseOverCircleOpacity":0.9,"SNPMouseOverCircleStrokeColor":"#F26223","SNPMouseOverCircleStrokeWidth":1,"SNPMouseOverTooltipsHtml01":"Chromosome: ","SNPMouseOverTooltipsHtml02":"<br/>Position: ","SNPMouseOverTooltipsHtml03":"<br/>Value: ","SNPMouseOverTooltipsHtml04":"<br/>","SNPMouseOverTooltipsHtml05":"","SNPMouseOverTooltipsBorderWidth":"1px","zoom":true,"TEXTModuleDragEvent":false,"ARCMouseEvent":true,"ARCMouseClickDisplay":false,"ARCMouseClickColor":"red","ARCMouseClickArcOpacity":1,"ARCMouseClickArcStrokeColor":"#F26223","ARCMouseClickArcStrokeWidth":1,"ARCMouseClickTextFromData":"fourth","ARCMouseClickTextOpacity":1,"ARCMouseClickTextColor":"red","ARCMouseClickTextSize":8,"ARCMouseClickTextPostionX":0,"ARCMouseClickTextPostionY":0,"ARCMouseClickTextDrag":true,"ARCMouseDownDisplay":false,"ARCMouseDownColor":"green","ARCMouseDownArcOpacity":1,"ARCMouseDownArcStrokeColor":"#F26223","ARCMouseDownArcStrokeWidth":0,"ARCMouseEnterDisplay":false,"ARCMouseEnterColor":"yellow","ARCMouseEnterArcOpacity":1,"ARCMouseEnterArcStrokeColor":"#F26223","ARCMouseEnterArcStrokeWidth":0,"ARCMouseLeaveDisplay":false,"ARCMouseLeaveColor":"pink","ARCMouseLeaveArcOpacity":1,"ARCMouseLeaveArcStrokeColor":"#F26223","ARCMouseLeaveArcStrokeWidth":0,"ARCMouseMoveDisplay":false,"ARCMouseMoveColor":"red","ARCMouseMoveArcOpacity":1,"ARCMouseMoveArcStrokeColor":"#F26223","ARCMouseMoveArcStrokeWidth":0,"ARCMouseOutDisplay":true,"ARCMouseOutAnimationTime":500,"ARCMouseOutColor":"none","ARCMouseOutArcOpacity":"none","ARCMouseOutArcStrokeColor":"red","ARCMouseOutArcStrokeWidth":0,"ARCMouseUpDisplay":false,"ARCMouseUpColor":"grey","ARCMouseUpArcOpacity":1,"ARCMouseUpArcStrokeColor":"#F26223","ARCMouseUpArcStrokeWidth":0,"ARCMouseOverDisplay":true,"ARCMouseOverColor":"#FF0000","ARCMouseOverArcOpacity":0.9,"ARCMouseOverArcStrokeColor":"#F26223","ARCMouseOverArcStrokeWidth":3,"ARCMouseOverTooltipsHtml01":"Chromosome: ","ARCMouseOverTooltipsHtml02":"<br/>Start: ","ARCMouseOverTooltipsHtml03":"<br/>End: ","ARCMouseOverTooltipsHtml04":"<br/>","ARCMouseOverTooltipsHtml05":"","ARCMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseEvent":true,"HISTOGRAMMouseClickDisplay":false,"HISTOGRAMMouseClickColor":"red","HISTOGRAMMouseClickOpacity":1,"HISTOGRAMMouseClickStrokeColor":"none","HISTOGRAMMouseClickStrokeWidth":"none","HISTOGRAMMouseDownDisplay":false,"HISTOGRAMMouseDownColor":"red","HISTOGRAMMouseDownOpacity":1,"HISTOGRAMMouseDownStrokeColor":"none","HISTOGRAMMouseDownStrokeWidth":"none","HISTOGRAMMouseEnterDisplay":false,"HISTOGRAMMouseEnterColor":"red","HISTOGRAMMouseEnterOpacity":1,"HISTOGRAMMouseEnterStrokeColor":"none","HISTOGRAMMouseEnterStrokeWidth":"none","HISTOGRAMMouseLeaveDisplay":false,"HISTOGRAMMouseLeaveColor":"red","HISTOGRAMMouseLeaveOpacity":1,"HISTOGRAMMouseLeaveStrokeColor":"none","HISTOGRAMMouseLeaveStrokeWidth":"none","HISTOGRAMMouseMoveDisplay":false,"HISTOGRAMMouseMoveColor":"red","HISTOGRAMMouseMoveOpacity":1,"HISTOGRAMMouseMoveStrokeColor":"none","HISTOGRAMMouseMoveStrokeWidth":"none","HISTOGRAMMouseOutDisplay":true,"HISTOGRAMMouseOutAnimationTime":500,"HISTOGRAMMouseOutColor":"none","HISTOGRAMMouseOutOpacity":1,"HISTOGRAMMouseOutStrokeColor":"none","HISTOGRAMMouseOutStrokeWidth":"none","HISTOGRAMMouseUpDisplay":false,"HISTOGRAMMouseUpColor":"red","HISTOGRAMMouseUpOpacity":1,"HISTOGRAMMouseUpStrokeColor":"none","HISTOGRAMMouseUpStrokeWidth":"none","HISTOGRAMMouseOverDisplay":true,"HISTOGRAMMouseOverColor":"#FF0000","HISTOGRAMMouseOverOpacity":0.9,"HISTOGRAMMouseOverStrokeColor":"none","HISTOGRAMMouseOverStrokeWidth":"none","HISTOGRAMMouseOverTooltipsHtml01":"Chromosome: ","HISTOGRAMMouseOverTooltipsHtml02":"<br/>Start: ","HISTOGRAMMouseOverTooltipsHtml03":" End: ","HISTOGRAMMouseOverTooltipsHtml04":"<br/>","HISTOGRAMMouseOverTooltipsHtml05":"<br/>Value: ","HISTOGRAMMouseOverTooltipsHtml06":"","HISTOGRAMMouseOverTooltipsPosition":"absolute","HISTOGRAMMouseOverTooltipsBackgroundColor":"white","HISTOGRAMMouseOverTooltipsBorderStyle":"solid","HISTOGRAMMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseOverTooltipsPadding":"3px","HISTOGRAMMouseOverTooltipsBorderRadius":"3px","HISTOGRAMMouseOverTooltipsOpacity":0.8,"HEATMAPMouseEvent":true,"HEATMAPMouseClickDisplay":false,"HEATMAPMouseClickColor":"green","HEATMAPMouseClickOpacity":1,"HEATMAPMouseClickStrokeColor":"none","HEATMAPMouseClickStrokeWidth":"none","HEATMAPMouseDownDisplay":false,"HEATMAPMouseDownColor":"green","HEATMAPMouseDownOpacity":1,"HEATMAPMouseDownStrokeColor":"none","HEATMAPMouseDownStrokeWidth":"none","HEATMAPMouseEnterDisplay":false,"HEATMAPMouseEnterColor":"green","HEATMAPMouseEnterOpacity":1,"HEATMAPMouseEnterStrokeColor":"none","HEATMAPMouseEnterStrokeWidth":"none","HEATMAPMouseLeaveDisplay":false,"HEATMAPMouseLeaveColor":"green","HEATMAPMouseLeaveOpacity":1,"HEATMAPMouseLeaveStrokeColor":"none","HEATMAPMouseLeaveStrokeWidth":"none","HEATMAPMouseMoveDisplay":false,"HEATMAPMouseMoveColor":"green","HEATMAPMouseMoveOpacity":1,"HEATMAPMouseMoveStrokeColor":"none","HEATMAPMouseMoveStrokeWidth":"none","HEATMAPMouseOutDisplay":true,"HEATMAPMouseOutAnimationTime":500,"HEATMAPMouseOutColor":"none","HEATMAPMouseOutOpacity":1,"HEATMAPMouseOutStrokeColor":"none","HEATMAPMouseOutStrokeWidth":"none","HEATMAPMouseUpDisplay":false,"HEATMAPMouseUpColor":"green","HEATMAPMouseUpOpacity":1,"HEATMAPMouseUpStrokeColor":"none","HEATMAPMouseUpStrokeWidth":"none","HEATMAPMouseOverDisplay":true,"HEATMAPMouseOverColor":"#FF0000","HEATMAPMouseOverOpacity":0.9,"HEATMAPMouseOverStrokeColor":"none","HEATMAPMouseOverStrokeWidth":"none","HEATMAPMouseOverTooltipsHtml01":"Chromosome: ","HEATMAPMouseOverTooltipsHtml02":"<br/>Start: ","HEATMAPMouseOverTooltipsHtml03":" End: ","HEATMAPMouseOverTooltipsHtml04":"<br/>","HEATMAPMouseOverTooltipsHtml05":"<br/>Value: ","HEATMAPMouseOverTooltipsHtml06":"","HEATMAPMouseOverTooltipsPosition":"absolute","HEATMAPMouseOverTooltipsBackgroundColor":"white","HEATMAPMouseOverTooltipsBorderStyle":"solid","HEATMAPMouseOverTooltipsBorderWidth":"1px","HEATMAPMouseOverTooltipsPadding":"3px","HEATMAPMouseOverTooltipsBorderRadius":"3px","HEATMAPMouseOverTooltipsOpacity":0.8,"LINKMouseEvent":true,"LINKMouseClickDisplay":false,"LINKMouseClickColor":"red","LINKMouseClickTextFromData":"fourth","LINKMouseClickTextOpacity":1,"LINKMouseClickTextColor":"red","LINKMouseClickTextSize":8,"LINKMouseClickTextPostionX":0,"LINKMouseClickTextPostionY":0,"LINKMouseClickTextDrag":true,"LINKMouseDownDisplay":false,"LINKMouseDownColor":"green","LINKMouseEnterDisplay":false,"LINKMouseEnterColor":"yellow","LINKMouseLeaveDisplay":false,"LINKMouseLeaveColor":"pink","LINKMouseMoveDisplay":false,"LINKMouseMoveColor":"red","LINKMouseOutDisplay":true,"LINKMouseOutAnimationTime":500,"LINKMouseOutStrokeColor":"none","LINKMouseUpDisplay":false,"LINKMouseUpColor":"grey","LINKMouseOverOpacity":0.9,"LINKMouseOverDisplay":true,"LINKMouseOverStrokeColor":"#FF00FF","LINKMouseOverTooltipsHtml01":"Fusion: ","LINKMouseOverTooltipsHtml02":"","LINKMouseOverStrokeWidth":5,"LINKMouseOutStrokeWidth":"none","LINKMouseOverTooltipsBorderWidth":"1px","LINEMouseEvent":true,"LINEMouseClickDisplay":false,"LINEMouseClickLineOpacity":1,"LINEMouseClickLineStrokeColor":"red","LINEMouseClickLineStrokeWidth":"none","LINEMouseDownDisplay":false,"LINEMouseDownLineOpacity":1,"LINEMouseDownLineStrokeColor":"red","LINEMouseDownLineStrokeWidth":"none","LINEMouseEnterDisplay":false,"LINEMouseEnterLineOpacity":1,"LINEMouseEnterLineStrokeColor":"red","LINEMouseEnterLineStrokeWidth":"none","LINEMouseLeaveDisplay":false,"LINEMouseLeaveLineOpacity":1,"LINEMouseLeaveLineStrokeColor":"red","LINEMouseLeaveLineStrokeWidth":"none","LINEMouseMoveDisplay":false,"LINEMouseMoveLineOpacity":1,"LINEMouseMoveLineStrokeColor":"red","LINEMouseMoveLineStrokeWidth":"none","LINEMouseOutDisplay":true,"LINEMouseOutAnimationTime":500,"LINEMouseOutLineOpacity":"none","LINEMouseOutLineStrokeColor":"none","LINEMouseOutLineStrokeWidth":"none","LINEMouseUpDisplay":false,"LINEMouseUpLineOpacity":1,"LINEMouseUpLineStrokeColor":"red","LINEMouseUpLineStrokeWidth":"none","LINEMouseOverDisplay":true,"LINEMouseOverLineOpacity":1,"LINEMouseOverLineStrokeColor":"#FF0000","LINEMouseOverLineStrokeWidth":"none","LINEMouseOverTooltipsHtml01":"Line","LINEMouseOverTooltipsPosition":"absolute","LINEMouseOverTooltipsBackgroundColor":"white","LINEMouseOverTooltipsBorderStyle":"solid","LINEMouseOverTooltipsBorderWidth":0,"LINEMouseOverTooltipsPadding":"3px","LINEMouseOverTooltipsBorderRadius":"3px","LINEMouseOverTooltipsOpacity":0.8,"CNVMouseEvent":true,"CNVMouseClickDisplay":false,"CNVMouseClickColor":"red","CNVMouseClickArcOpacity":1,"CNVMouseClickArcStrokeColor":"#F26223","CNVMouseClickArcStrokeWidth":0,"CNVMouseClickTextFromData":"fourth","CNVMouseClickTextOpacity":1,"CNVMouseClickTextColor":"red","CNVMouseClickTextSize":8,"CNVMouseClickTextPostionX":0,"CNVMouseClickTextPostionY":0,"CNVMouseClickTextDrag":true,"CNVMouseDownDisplay":false,"CNVMouseDownColor":"green","CNVMouseDownArcOpacity":1,"CNVMouseDownArcStrokeColor":"#F26223","CNVMouseDownArcStrokeWidth":0,"CNVMouseEnterDisplay":false,"CNVMouseEnterColor":"yellow","CNVMouseEnterArcOpacity":1,"CNVMouseEnterArcStrokeColor":"#F26223","CNVMouseEnterArcStrokeWidth":0,"CNVMouseLeaveDisplay":false,"CNVMouseLeaveColor":"pink","CNVMouseLeaveArcOpacity":1,"CNVMouseLeaveArcStrokeColor":"#F26223","CNVMouseLeaveArcStrokeWidth":0,"CNVMouseMoveDisplay":false,"CNVMouseMoveColor":"red","CNVMouseMoveArcOpacity":1,"CNVMouseMoveArcStrokeColor":"#F26223","CNVMouseMoveArcStrokeWidth":0,"CNVMouseOutDisplay":true,"CNVMouseOutAnimationTime":500,"CNVMouseOutColor":"none","CNVMouseOutArcOpacity":1,"CNVMouseOutArcStrokeColor":"none","CNVMouseOutArcStrokeWidth":0,"CNVMouseUpDisplay":false,"CNVMouseUpColor":"grey","CNVMouseUpArcOpacity":1,"CNVMouseUpArcStrokeColor":"#F26223","CNVMouseUpArcStrokeWidth":0,"CNVMouseOverDisplay":true,"CNVMouseOverColor":"#FF0000","CNVMouseOverArcOpacity":0.9,"CNVMouseOverArcStrokeColor":"#F26223","CNVMouseOverArcStrokeWidth":3,"CNVMouseOverTooltipsHtml01":"Chromosome: ","CNVMouseOverTooltipsHtml02":"<br>Start: ","CNVMouseOverTooltipsHtml03":"<br>End: ","CNVMouseOverTooltipsHtml04":"<br>Value: ","CNVMouseOverTooltipsHtml05":"","CNVMouseOverTooltipsPosition":"absolute","CNVMouseOverTooltipsBackgroundColor":"white","CNVMouseOverTooltipsBorderStyle":"solid","CNVMouseOverTooltipsBorderWidth":"1px","CNVMouseOverTooltipsPadding":"3px","CNVMouseOverTooltipsBorderRadius":"3px","CNVMouseOverTooltipsOpacity":0.8},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="e27" class="section level2">
+<h2>E27</h2>
+<div class="BioCircos html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-02880d8cbf9369760f4f" style="width:576px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-02880d8cbf9369760f4f">{"x":{"message":["function (..., domain = NULL, appendLF = TRUE) ","{","    cond <- if (...length() == 1L && inherits(..1, \"condition\")) {","        if (nargs() > 1L) ","            warning(\"additional arguments ignored in message()\")","        ..1","    }","    else {","        msg <- .makeMessage(..., domain = domain, appendLF = appendLF)","        call <- sys.call()","        simpleMessage(msg, call)","    }","    defaultHandler <- function(c) {","        cat(conditionMessage(c), file = stderr(), sep = \"\")","    }","    withRestarts({","        signalCondition(cond)","        defaultHandler(cond)","    }, muffleMessage = function() NULL)","    invisible()","}"],"tracklist":[["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"#CC0000","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"112000001","end":"133000000","value":"1"},{"chr":"11","start":"111000001","end":"135000000","value":"1"},{"chr":"15","start":"66000001","end":"75000000","value":"1"},{"chr":"15","start":"86000001","end":"101000000","value":"1"},{"chr":"1","start":"17000001","end":"70000000","value":"1"},{"chr":"1","start":"3000001","end":"12000000","value":"1"},{"chr":"22","start":"25000001","end":"51000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"blue","CNVwidth":2,"range":[0,6]},[{"chr":"11","start":"112000001","end":"135000000","value":"2"},{"chr":"11","start":"5000001","end":"21000000","value":"2"},{"chr":"14","start":"20000001","end":"50000000","value":"2"},{"chr":"14","start":"94000001","end":"105000000","value":"2"},{"chr":"15","start":"66000001","end":"75000000","value":"2"},{"chr":"15","start":"86000001","end":"101000000","value":"2"},{"chr":"19","start":"1000001","end":"20000000","value":"2"},{"chr":"19","start":"29000001","end":"42000000","value":"2"},{"chr":"19","start":"44000001","end":"51000000","value":"2"},{"chr":"20","start":"1","end":"25000000","value":"2"},{"chr":"20","start":"32000001","end":"64000000","value":"2"},{"chr":"3","start":"131000001","end":"144000000","value":"2"},{"chr":"7","start":"22000001","end":"32000000","value":"2"},{"chr":"7","start":"36000001","end":"45000000","value":"2"},{"chr":"7","start":"78000001","end":"97000000","value":"2"},{"chr":"9","start":"132000001","end":"138000000","value":"2"},{"chr":"9","start":"70000001","end":"94000000","value":"2"},{"chr":"9","start":"95000001","end":"123000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}],["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"pink","CNVwidth":2,"range":[0,6]},[{"chr":"19","start":"1000001","end":"20000000","value":"1"},{"chr":"19","start":"29000001","end":"42000000","value":"1"},{"chr":"19","start":"44000001","end":"54000000","value":"1"},{"chr":"19","start":"55000001","end":"59000000","value":"1"},{"chr":"4","start":"176000001","end":"189000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"lightblue","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"1000001","end":"37000000","value":"2"},{"chr":"10","start":"43000001","end":"45000000","value":"2"},{"chr":"10","start":"51000001","end":"79000000","value":"2"},{"chr":"10","start":"80000001","end":"87000000","value":"2"},{"chr":"10","start":"88000001","end":"133000000","value":"2"},{"chr":"14","start":"50000001","end":"77000000","value":"2"},{"chr":"15","start":"25000001","end":"28000000","value":"2"},{"chr":"15","start":"33000001","end":"43000000","value":"2"},{"chr":"15","start":"44000001","end":"66000000","value":"2"},{"chr":"16","start":"1","end":"2000000","value":"2"},{"chr":"16","start":"3000001","end":"14000000","value":"2"},{"chr":"16","start":"47000001","end":"70000000","value":"2"},{"chr":"16","start":"72000001","end":"88000000","value":"2"},{"chr":"16","start":"89000001","end":"90000000","value":"2"},{"chr":"17","start":"1000001","end":"3000000","value":"2"},{"chr":"17","start":"17000001","end":"18000000","value":"2"},{"chr":"17","start":"28000001","end":"30000000","value":"2"},{"chr":"17","start":"31000001","end":"36000000","value":"2"},{"chr":"17","start":"39000001","end":"43000000","value":"2"},{"chr":"17","start":"4000001","end":"15000000","value":"2"},{"chr":"17","start":"44000001","end":"45000000","value":"2"},{"chr":"17","start":"48000001","end":"62000000","value":"2"},{"chr":"17","start":"65000001","end":"83000000","value":"2"},{"chr":"18","start":"1000001","end":"13000000","value":"2"},{"chr":"19","start":"51000001","end":"54000000","value":"2"},{"chr":"19","start":"55000001","end":"59000000","value":"2"},{"chr":"1","start":"1000001","end":"2000000","value":"2"},{"chr":"1","start":"17000001","end":"53000000","value":"2"},{"chr":"1","start":"235000001","end":"242000000","value":"2"},{"chr":"1","start":"244000001","end":"248000000","value":"2"},{"chr":"1","start":"3000001","end":"12000000","value":"2"},{"chr":"22","start":"27000001","end":"51000000","value":"2"},{"chr":"8","start":"137000001","end":"145000000","value":"2"},{"chr":"9","start":"1000001","end":"13000000","value":"2"},{"chr":"9","start":"123000001","end":"132000000","value":"2"},{"chr":"9","start":"16000001","end":"25000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}]],"genome":{"1":248956422,"2":242193529,"3":198295559,"4":190214555,"5":181538259,"6":170805979,"7":159345973,"8":145138636,"9":138394717,"10":133797422,"11":135086622,"12":133275309,"13":114364328,"14":107043718,"15":101991189,"16":90338345,"17":83257441,"18":80373285,"19":58617616,"20":64444167,"21":46709983,"22":50818468,"X":156040895,"Y":57227415},"genomeFillColor":["#FFFFE5","#FFFCD8","#FFFACC","#FFF7BF","#FEF2B2","#FEECA5","#FEE698","#FEDE88","#FED574","#FECC60","#FEC24D","#FEB541","#FEA736","#FE9A2A","#F98E23","#F3811D","#EE7516","#E66910","#DC5E0B","#D25305","#C64902","#B23F02","#9F3603","#8C2D04"],"chrPad":0.04,"displayGenomeBorder":true,"genomeBorderColor":"#000","genomeBorderSize":0.5,"genomeTicksDisplay":false,"genomeTicksLen":5,"genomeTicksColor":"#000","genomeTicksTextSize":"0.6em","genomeTicksTextColor":"#000","genomeTicksScale":30000000,"genomeLabelDisplay":true,"genomeLabelTextSize":"10pt","genomeLabelTextColor":"#000","genomeLabelDx":0,"genomeLabelDy":0,"genomeLabelOrientation":0,"SNPMouseEvent":true,"SNPMouseClickDisplay":false,"SNPMouseClickColor":"red","SNPMouseClickCircleSize":4,"SNPMouseClickCircleOpacity":1,"SNPMouseClickCircleStrokeColor":"#F26223","SNPMouseClickCircleStrokeWidth":0,"SNPMouseClickTextFromData":"fourth","SNPMouseClickTextOpacity":1,"SNPMouseClickTextColor":"red","SNPMouseClickTextSize":8,"SNPMouseClickTextPostionX":1,"SNPMouseClickTextPostionY":10,"SNPMouseClickTextDrag":true,"SNPMouseDownDisplay":false,"SNPMouseDownColor":"green","SNPMouseDownCircleSize":4,"SNPMouseDownCircleOpacity":1,"SNPMouseDownCircleStrokeColor":"#F26223","SNPMouseDownCircleStrokeWidth":0,"SNPMouseEnterDisplay":false,"SNPMouseEnterColor":"yellow","SNPMouseEnterCircleSize":4,"SNPMouseEnterCircleOpacity":1,"SNPMouseEnterCircleStrokeColor":"#F26223","SNPMouseEnterCircleStrokeWidth":0,"SNPMouseLeaveDisplay":false,"SNPMouseLeaveColor":"pink","SNPMouseLeaveCircleSize":4,"SNPMouseLeaveCircleOpacity":1,"SNPMouseLeaveCircleStrokeColor":"#F26223","SNPMouseLeaveCircleStrokeWidth":0,"SNPMouseMoveDisplay":false,"SNPMouseMoveColor":"red","SNPMouseMoveCircleSize":2,"SNPMouseMoveCircleOpacity":1,"SNPMouseMoveCircleStrokeColor":"#F26223","SNPMouseMoveCircleStrokeWidth":0,"SNPMouseOutDisplay":true,"SNPMouseOutAnimationTime":500,"SNPMouseOutColor":"none","SNPMouseOutCircleSize":2,"SNPMouseOutCircleOpacity":"none","SNPMouseOutCircleStrokeColor":"red","SNPMouseOutCircleStrokeWidth":0,"SNPMouseUpDisplay":false,"SNPMouseUpColor":"grey","SNPMouseUpCircleSize":4,"SNPMouseUpCircleOpacity":1,"SNPMouseUpCircleStrokeColor":"#F26223","SNPMouseUpCircleStrokeWidth":0,"SNPMouseOverDisplay":true,"SNPMouseOverColor":"#FF0000","SNPMouseOverCircleSize":3,"SNPMouseOverCircleOpacity":0.9,"SNPMouseOverCircleStrokeColor":"#F26223","SNPMouseOverCircleStrokeWidth":1,"SNPMouseOverTooltipsHtml01":"Chromosome: ","SNPMouseOverTooltipsHtml02":"<br/>Position: ","SNPMouseOverTooltipsHtml03":"<br/>Value: ","SNPMouseOverTooltipsHtml04":"<br/>","SNPMouseOverTooltipsHtml05":"","SNPMouseOverTooltipsBorderWidth":"1px","zoom":true,"TEXTModuleDragEvent":false,"ARCMouseEvent":true,"ARCMouseClickDisplay":false,"ARCMouseClickColor":"red","ARCMouseClickArcOpacity":1,"ARCMouseClickArcStrokeColor":"#F26223","ARCMouseClickArcStrokeWidth":1,"ARCMouseClickTextFromData":"fourth","ARCMouseClickTextOpacity":1,"ARCMouseClickTextColor":"red","ARCMouseClickTextSize":8,"ARCMouseClickTextPostionX":0,"ARCMouseClickTextPostionY":0,"ARCMouseClickTextDrag":true,"ARCMouseDownDisplay":false,"ARCMouseDownColor":"green","ARCMouseDownArcOpacity":1,"ARCMouseDownArcStrokeColor":"#F26223","ARCMouseDownArcStrokeWidth":0,"ARCMouseEnterDisplay":false,"ARCMouseEnterColor":"yellow","ARCMouseEnterArcOpacity":1,"ARCMouseEnterArcStrokeColor":"#F26223","ARCMouseEnterArcStrokeWidth":0,"ARCMouseLeaveDisplay":false,"ARCMouseLeaveColor":"pink","ARCMouseLeaveArcOpacity":1,"ARCMouseLeaveArcStrokeColor":"#F26223","ARCMouseLeaveArcStrokeWidth":0,"ARCMouseMoveDisplay":false,"ARCMouseMoveColor":"red","ARCMouseMoveArcOpacity":1,"ARCMouseMoveArcStrokeColor":"#F26223","ARCMouseMoveArcStrokeWidth":0,"ARCMouseOutDisplay":true,"ARCMouseOutAnimationTime":500,"ARCMouseOutColor":"none","ARCMouseOutArcOpacity":"none","ARCMouseOutArcStrokeColor":"red","ARCMouseOutArcStrokeWidth":0,"ARCMouseUpDisplay":false,"ARCMouseUpColor":"grey","ARCMouseUpArcOpacity":1,"ARCMouseUpArcStrokeColor":"#F26223","ARCMouseUpArcStrokeWidth":0,"ARCMouseOverDisplay":true,"ARCMouseOverColor":"#FF0000","ARCMouseOverArcOpacity":0.9,"ARCMouseOverArcStrokeColor":"#F26223","ARCMouseOverArcStrokeWidth":3,"ARCMouseOverTooltipsHtml01":"Chromosome: ","ARCMouseOverTooltipsHtml02":"<br/>Start: ","ARCMouseOverTooltipsHtml03":"<br/>End: ","ARCMouseOverTooltipsHtml04":"<br/>","ARCMouseOverTooltipsHtml05":"","ARCMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseEvent":true,"HISTOGRAMMouseClickDisplay":false,"HISTOGRAMMouseClickColor":"red","HISTOGRAMMouseClickOpacity":1,"HISTOGRAMMouseClickStrokeColor":"none","HISTOGRAMMouseClickStrokeWidth":"none","HISTOGRAMMouseDownDisplay":false,"HISTOGRAMMouseDownColor":"red","HISTOGRAMMouseDownOpacity":1,"HISTOGRAMMouseDownStrokeColor":"none","HISTOGRAMMouseDownStrokeWidth":"none","HISTOGRAMMouseEnterDisplay":false,"HISTOGRAMMouseEnterColor":"red","HISTOGRAMMouseEnterOpacity":1,"HISTOGRAMMouseEnterStrokeColor":"none","HISTOGRAMMouseEnterStrokeWidth":"none","HISTOGRAMMouseLeaveDisplay":false,"HISTOGRAMMouseLeaveColor":"red","HISTOGRAMMouseLeaveOpacity":1,"HISTOGRAMMouseLeaveStrokeColor":"none","HISTOGRAMMouseLeaveStrokeWidth":"none","HISTOGRAMMouseMoveDisplay":false,"HISTOGRAMMouseMoveColor":"red","HISTOGRAMMouseMoveOpacity":1,"HISTOGRAMMouseMoveStrokeColor":"none","HISTOGRAMMouseMoveStrokeWidth":"none","HISTOGRAMMouseOutDisplay":true,"HISTOGRAMMouseOutAnimationTime":500,"HISTOGRAMMouseOutColor":"none","HISTOGRAMMouseOutOpacity":1,"HISTOGRAMMouseOutStrokeColor":"none","HISTOGRAMMouseOutStrokeWidth":"none","HISTOGRAMMouseUpDisplay":false,"HISTOGRAMMouseUpColor":"red","HISTOGRAMMouseUpOpacity":1,"HISTOGRAMMouseUpStrokeColor":"none","HISTOGRAMMouseUpStrokeWidth":"none","HISTOGRAMMouseOverDisplay":true,"HISTOGRAMMouseOverColor":"#FF0000","HISTOGRAMMouseOverOpacity":0.9,"HISTOGRAMMouseOverStrokeColor":"none","HISTOGRAMMouseOverStrokeWidth":"none","HISTOGRAMMouseOverTooltipsHtml01":"Chromosome: ","HISTOGRAMMouseOverTooltipsHtml02":"<br/>Start: ","HISTOGRAMMouseOverTooltipsHtml03":" End: ","HISTOGRAMMouseOverTooltipsHtml04":"<br/>","HISTOGRAMMouseOverTooltipsHtml05":"<br/>Value: ","HISTOGRAMMouseOverTooltipsHtml06":"","HISTOGRAMMouseOverTooltipsPosition":"absolute","HISTOGRAMMouseOverTooltipsBackgroundColor":"white","HISTOGRAMMouseOverTooltipsBorderStyle":"solid","HISTOGRAMMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseOverTooltipsPadding":"3px","HISTOGRAMMouseOverTooltipsBorderRadius":"3px","HISTOGRAMMouseOverTooltipsOpacity":0.8,"HEATMAPMouseEvent":true,"HEATMAPMouseClickDisplay":false,"HEATMAPMouseClickColor":"green","HEATMAPMouseClickOpacity":1,"HEATMAPMouseClickStrokeColor":"none","HEATMAPMouseClickStrokeWidth":"none","HEATMAPMouseDownDisplay":false,"HEATMAPMouseDownColor":"green","HEATMAPMouseDownOpacity":1,"HEATMAPMouseDownStrokeColor":"none","HEATMAPMouseDownStrokeWidth":"none","HEATMAPMouseEnterDisplay":false,"HEATMAPMouseEnterColor":"green","HEATMAPMouseEnterOpacity":1,"HEATMAPMouseEnterStrokeColor":"none","HEATMAPMouseEnterStrokeWidth":"none","HEATMAPMouseLeaveDisplay":false,"HEATMAPMouseLeaveColor":"green","HEATMAPMouseLeaveOpacity":1,"HEATMAPMouseLeaveStrokeColor":"none","HEATMAPMouseLeaveStrokeWidth":"none","HEATMAPMouseMoveDisplay":false,"HEATMAPMouseMoveColor":"green","HEATMAPMouseMoveOpacity":1,"HEATMAPMouseMoveStrokeColor":"none","HEATMAPMouseMoveStrokeWidth":"none","HEATMAPMouseOutDisplay":true,"HEATMAPMouseOutAnimationTime":500,"HEATMAPMouseOutColor":"none","HEATMAPMouseOutOpacity":1,"HEATMAPMouseOutStrokeColor":"none","HEATMAPMouseOutStrokeWidth":"none","HEATMAPMouseUpDisplay":false,"HEATMAPMouseUpColor":"green","HEATMAPMouseUpOpacity":1,"HEATMAPMouseUpStrokeColor":"none","HEATMAPMouseUpStrokeWidth":"none","HEATMAPMouseOverDisplay":true,"HEATMAPMouseOverColor":"#FF0000","HEATMAPMouseOverOpacity":0.9,"HEATMAPMouseOverStrokeColor":"none","HEATMAPMouseOverStrokeWidth":"none","HEATMAPMouseOverTooltipsHtml01":"Chromosome: ","HEATMAPMouseOverTooltipsHtml02":"<br/>Start: ","HEATMAPMouseOverTooltipsHtml03":" End: ","HEATMAPMouseOverTooltipsHtml04":"<br/>","HEATMAPMouseOverTooltipsHtml05":"<br/>Value: ","HEATMAPMouseOverTooltipsHtml06":"","HEATMAPMouseOverTooltipsPosition":"absolute","HEATMAPMouseOverTooltipsBackgroundColor":"white","HEATMAPMouseOverTooltipsBorderStyle":"solid","HEATMAPMouseOverTooltipsBorderWidth":"1px","HEATMAPMouseOverTooltipsPadding":"3px","HEATMAPMouseOverTooltipsBorderRadius":"3px","HEATMAPMouseOverTooltipsOpacity":0.8,"LINKMouseEvent":true,"LINKMouseClickDisplay":false,"LINKMouseClickColor":"red","LINKMouseClickTextFromData":"fourth","LINKMouseClickTextOpacity":1,"LINKMouseClickTextColor":"red","LINKMouseClickTextSize":8,"LINKMouseClickTextPostionX":0,"LINKMouseClickTextPostionY":0,"LINKMouseClickTextDrag":true,"LINKMouseDownDisplay":false,"LINKMouseDownColor":"green","LINKMouseEnterDisplay":false,"LINKMouseEnterColor":"yellow","LINKMouseLeaveDisplay":false,"LINKMouseLeaveColor":"pink","LINKMouseMoveDisplay":false,"LINKMouseMoveColor":"red","LINKMouseOutDisplay":true,"LINKMouseOutAnimationTime":500,"LINKMouseOutStrokeColor":"none","LINKMouseUpDisplay":false,"LINKMouseUpColor":"grey","LINKMouseOverOpacity":0.9,"LINKMouseOverDisplay":true,"LINKMouseOverStrokeColor":"#FF00FF","LINKMouseOverTooltipsHtml01":"Fusion: ","LINKMouseOverTooltipsHtml02":"","LINKMouseOverStrokeWidth":5,"LINKMouseOutStrokeWidth":"none","LINKMouseOverTooltipsBorderWidth":"1px","LINEMouseEvent":true,"LINEMouseClickDisplay":false,"LINEMouseClickLineOpacity":1,"LINEMouseClickLineStrokeColor":"red","LINEMouseClickLineStrokeWidth":"none","LINEMouseDownDisplay":false,"LINEMouseDownLineOpacity":1,"LINEMouseDownLineStrokeColor":"red","LINEMouseDownLineStrokeWidth":"none","LINEMouseEnterDisplay":false,"LINEMouseEnterLineOpacity":1,"LINEMouseEnterLineStrokeColor":"red","LINEMouseEnterLineStrokeWidth":"none","LINEMouseLeaveDisplay":false,"LINEMouseLeaveLineOpacity":1,"LINEMouseLeaveLineStrokeColor":"red","LINEMouseLeaveLineStrokeWidth":"none","LINEMouseMoveDisplay":false,"LINEMouseMoveLineOpacity":1,"LINEMouseMoveLineStrokeColor":"red","LINEMouseMoveLineStrokeWidth":"none","LINEMouseOutDisplay":true,"LINEMouseOutAnimationTime":500,"LINEMouseOutLineOpacity":"none","LINEMouseOutLineStrokeColor":"none","LINEMouseOutLineStrokeWidth":"none","LINEMouseUpDisplay":false,"LINEMouseUpLineOpacity":1,"LINEMouseUpLineStrokeColor":"red","LINEMouseUpLineStrokeWidth":"none","LINEMouseOverDisplay":true,"LINEMouseOverLineOpacity":1,"LINEMouseOverLineStrokeColor":"#FF0000","LINEMouseOverLineStrokeWidth":"none","LINEMouseOverTooltipsHtml01":"Line","LINEMouseOverTooltipsPosition":"absolute","LINEMouseOverTooltipsBackgroundColor":"white","LINEMouseOverTooltipsBorderStyle":"solid","LINEMouseOverTooltipsBorderWidth":0,"LINEMouseOverTooltipsPadding":"3px","LINEMouseOverTooltipsBorderRadius":"3px","LINEMouseOverTooltipsOpacity":0.8,"CNVMouseEvent":true,"CNVMouseClickDisplay":false,"CNVMouseClickColor":"red","CNVMouseClickArcOpacity":1,"CNVMouseClickArcStrokeColor":"#F26223","CNVMouseClickArcStrokeWidth":0,"CNVMouseClickTextFromData":"fourth","CNVMouseClickTextOpacity":1,"CNVMouseClickTextColor":"red","CNVMouseClickTextSize":8,"CNVMouseClickTextPostionX":0,"CNVMouseClickTextPostionY":0,"CNVMouseClickTextDrag":true,"CNVMouseDownDisplay":false,"CNVMouseDownColor":"green","CNVMouseDownArcOpacity":1,"CNVMouseDownArcStrokeColor":"#F26223","CNVMouseDownArcStrokeWidth":0,"CNVMouseEnterDisplay":false,"CNVMouseEnterColor":"yellow","CNVMouseEnterArcOpacity":1,"CNVMouseEnterArcStrokeColor":"#F26223","CNVMouseEnterArcStrokeWidth":0,"CNVMouseLeaveDisplay":false,"CNVMouseLeaveColor":"pink","CNVMouseLeaveArcOpacity":1,"CNVMouseLeaveArcStrokeColor":"#F26223","CNVMouseLeaveArcStrokeWidth":0,"CNVMouseMoveDisplay":false,"CNVMouseMoveColor":"red","CNVMouseMoveArcOpacity":1,"CNVMouseMoveArcStrokeColor":"#F26223","CNVMouseMoveArcStrokeWidth":0,"CNVMouseOutDisplay":true,"CNVMouseOutAnimationTime":500,"CNVMouseOutColor":"none","CNVMouseOutArcOpacity":1,"CNVMouseOutArcStrokeColor":"none","CNVMouseOutArcStrokeWidth":0,"CNVMouseUpDisplay":false,"CNVMouseUpColor":"grey","CNVMouseUpArcOpacity":1,"CNVMouseUpArcStrokeColor":"#F26223","CNVMouseUpArcStrokeWidth":0,"CNVMouseOverDisplay":true,"CNVMouseOverColor":"#FF0000","CNVMouseOverArcOpacity":0.9,"CNVMouseOverArcStrokeColor":"#F26223","CNVMouseOverArcStrokeWidth":3,"CNVMouseOverTooltipsHtml01":"Chromosome: ","CNVMouseOverTooltipsHtml02":"<br>Start: ","CNVMouseOverTooltipsHtml03":"<br>End: ","CNVMouseOverTooltipsHtml04":"<br>Value: ","CNVMouseOverTooltipsHtml05":"","CNVMouseOverTooltipsPosition":"absolute","CNVMouseOverTooltipsBackgroundColor":"white","CNVMouseOverTooltipsBorderStyle":"solid","CNVMouseOverTooltipsBorderWidth":"1px","CNVMouseOverTooltipsPadding":"3px","CNVMouseOverTooltipsBorderRadius":"3px","CNVMouseOverTooltipsOpacity":0.8},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="h7" class="section level2">
+<h2>H7</h2>
+<div class="BioCircos html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-3ddf61f37a3b681f1823" style="width:576px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-3ddf61f37a3b681f1823">{"x":{"message":["function (..., domain = NULL, appendLF = TRUE) ","{","    cond <- if (...length() == 1L && inherits(..1, \"condition\")) {","        if (nargs() > 1L) ","            warning(\"additional arguments ignored in message()\")","        ..1","    }","    else {","        msg <- .makeMessage(..., domain = domain, appendLF = appendLF)","        call <- sys.call()","        simpleMessage(msg, call)","    }","    defaultHandler <- function(c) {","        cat(conditionMessage(c), file = stderr(), sep = \"\")","    }","    withRestarts({","        signalCondition(cond)","        defaultHandler(cond)","    }, muffleMessage = function() NULL)","    invisible()","}"],"tracklist":[["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"#CC0000","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"114000001","end":"133000000","value":"1"},{"chr":"11","start":"112000001","end":"135000000","value":"1"},{"chr":"12","start":"105000001","end":"133000000","value":"1"},{"chr":"15","start":"69000001","end":"75000000","value":"1"},{"chr":"15","start":"86000001","end":"101000000","value":"1"},{"chr":"1","start":"17000001","end":"61000000","value":"1"},{"chr":"1","start":"3000001","end":"12000000","value":"1"},{"chr":"20","start":"1","end":"25000000","value":"1"},{"chr":"20","start":"32000001","end":"64000000","value":"1"},{"chr":"22","start":"25000001","end":"51000000","value":"1"},{"chr":"8","start":"126000001","end":"145000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"blue","CNVwidth":2,"range":[0,6]},[{"chr":"18","start":"1000001","end":"14000000","value":"2"},{"chr":"18","start":"22000001","end":"80000000","value":"2"},{"chr":"7","start":"104000001","end":"128000000","value":"2"},{"chr":"7","start":"129000001","end":"143000000","value":"2"},{"chr":"7","start":"154000001","end":"159000000","value":"2"},{"chr":"7","start":"36000001","end":"45000000","value":"2"},{"chr":"7","start":"7000001","end":"32000000","value":"2"},{"chr":"7","start":"78000001","end":"97000000","value":"2"},{"chr":"8","start":"13000001","end":"42000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}],["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"pink","CNVwidth":2,"range":[0,6]},[{"chr":"21","start":"14000001","end":"43000000","value":"1"},{"chr":"4","start":"169000001","end":"189000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"lightblue","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"1000001","end":"37000000","value":"2"},{"chr":"10","start":"43000001","end":"45000000","value":"2"},{"chr":"10","start":"51000001","end":"79000000","value":"2"},{"chr":"10","start":"80000001","end":"87000000","value":"2"},{"chr":"10","start":"88000001","end":"133000000","value":"2"},{"chr":"11","start":"1000001","end":"3000000","value":"2"},{"chr":"11","start":"5000001","end":"48000000","value":"2"},{"chr":"11","start":"56000001","end":"63000000","value":"2"},{"chr":"11","start":"64000001","end":"67000000","value":"2"},{"chr":"11","start":"68000001","end":"71000000","value":"2"},{"chr":"11","start":"72000001","end":"89000000","value":"2"},{"chr":"11","start":"91000001","end":"135000000","value":"2"},{"chr":"12","start":"10000001","end":"31000000","value":"2"},{"chr":"12","start":"1","end":"8000000","value":"2"},{"chr":"12","start":"32000001","end":"33000000","value":"2"},{"chr":"12","start":"39000001","end":"63000000","value":"2"},{"chr":"12","start":"64000001","end":"133000000","value":"2"},{"chr":"13","start":"20000001","end":"52000000","value":"2"},{"chr":"13","start":"53000001","end":"111000000","value":"2"},{"chr":"17","start":"1000001","end":"3000000","value":"2"},{"chr":"17","start":"17000001","end":"18000000","value":"2"},{"chr":"17","start":"28000001","end":"30000000","value":"2"},{"chr":"17","start":"31000001","end":"36000000","value":"2"},{"chr":"17","start":"39000001","end":"43000000","value":"2"},{"chr":"17","start":"4000001","end":"15000000","value":"2"},{"chr":"17","start":"44000001","end":"45000000","value":"2"},{"chr":"17","start":"48000001","end":"62000000","value":"2"},{"chr":"17","start":"65000001","end":"83000000","value":"2"},{"chr":"6","start":"1000001","end":"26000000","value":"2"},{"chr":"6","start":"27000001","end":"57000000","value":"2"},{"chr":"6","start":"63000001","end":"86000000","value":"2"},{"chr":"6","start":"87000001","end":"167000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}]],"genome":{"1":248956422,"2":242193529,"3":198295559,"4":190214555,"5":181538259,"6":170805979,"7":159345973,"8":145138636,"9":138394717,"10":133797422,"11":135086622,"12":133275309,"13":114364328,"14":107043718,"15":101991189,"16":90338345,"17":83257441,"18":80373285,"19":58617616,"20":64444167,"21":46709983,"22":50818468,"X":156040895,"Y":57227415},"genomeFillColor":["#FFFFE5","#FFFCD8","#FFFACC","#FFF7BF","#FEF2B2","#FEECA5","#FEE698","#FEDE88","#FED574","#FECC60","#FEC24D","#FEB541","#FEA736","#FE9A2A","#F98E23","#F3811D","#EE7516","#E66910","#DC5E0B","#D25305","#C64902","#B23F02","#9F3603","#8C2D04"],"chrPad":0.04,"displayGenomeBorder":true,"genomeBorderColor":"#000","genomeBorderSize":0.5,"genomeTicksDisplay":false,"genomeTicksLen":5,"genomeTicksColor":"#000","genomeTicksTextSize":"0.6em","genomeTicksTextColor":"#000","genomeTicksScale":30000000,"genomeLabelDisplay":true,"genomeLabelTextSize":"10pt","genomeLabelTextColor":"#000","genomeLabelDx":0,"genomeLabelDy":0,"genomeLabelOrientation":0,"SNPMouseEvent":true,"SNPMouseClickDisplay":false,"SNPMouseClickColor":"red","SNPMouseClickCircleSize":4,"SNPMouseClickCircleOpacity":1,"SNPMouseClickCircleStrokeColor":"#F26223","SNPMouseClickCircleStrokeWidth":0,"SNPMouseClickTextFromData":"fourth","SNPMouseClickTextOpacity":1,"SNPMouseClickTextColor":"red","SNPMouseClickTextSize":8,"SNPMouseClickTextPostionX":1,"SNPMouseClickTextPostionY":10,"SNPMouseClickTextDrag":true,"SNPMouseDownDisplay":false,"SNPMouseDownColor":"green","SNPMouseDownCircleSize":4,"SNPMouseDownCircleOpacity":1,"SNPMouseDownCircleStrokeColor":"#F26223","SNPMouseDownCircleStrokeWidth":0,"SNPMouseEnterDisplay":false,"SNPMouseEnterColor":"yellow","SNPMouseEnterCircleSize":4,"SNPMouseEnterCircleOpacity":1,"SNPMouseEnterCircleStrokeColor":"#F26223","SNPMouseEnterCircleStrokeWidth":0,"SNPMouseLeaveDisplay":false,"SNPMouseLeaveColor":"pink","SNPMouseLeaveCircleSize":4,"SNPMouseLeaveCircleOpacity":1,"SNPMouseLeaveCircleStrokeColor":"#F26223","SNPMouseLeaveCircleStrokeWidth":0,"SNPMouseMoveDisplay":false,"SNPMouseMoveColor":"red","SNPMouseMoveCircleSize":2,"SNPMouseMoveCircleOpacity":1,"SNPMouseMoveCircleStrokeColor":"#F26223","SNPMouseMoveCircleStrokeWidth":0,"SNPMouseOutDisplay":true,"SNPMouseOutAnimationTime":500,"SNPMouseOutColor":"none","SNPMouseOutCircleSize":2,"SNPMouseOutCircleOpacity":"none","SNPMouseOutCircleStrokeColor":"red","SNPMouseOutCircleStrokeWidth":0,"SNPMouseUpDisplay":false,"SNPMouseUpColor":"grey","SNPMouseUpCircleSize":4,"SNPMouseUpCircleOpacity":1,"SNPMouseUpCircleStrokeColor":"#F26223","SNPMouseUpCircleStrokeWidth":0,"SNPMouseOverDisplay":true,"SNPMouseOverColor":"#FF0000","SNPMouseOverCircleSize":3,"SNPMouseOverCircleOpacity":0.9,"SNPMouseOverCircleStrokeColor":"#F26223","SNPMouseOverCircleStrokeWidth":1,"SNPMouseOverTooltipsHtml01":"Chromosome: ","SNPMouseOverTooltipsHtml02":"<br/>Position: ","SNPMouseOverTooltipsHtml03":"<br/>Value: ","SNPMouseOverTooltipsHtml04":"<br/>","SNPMouseOverTooltipsHtml05":"","SNPMouseOverTooltipsBorderWidth":"1px","zoom":true,"TEXTModuleDragEvent":false,"ARCMouseEvent":true,"ARCMouseClickDisplay":false,"ARCMouseClickColor":"red","ARCMouseClickArcOpacity":1,"ARCMouseClickArcStrokeColor":"#F26223","ARCMouseClickArcStrokeWidth":1,"ARCMouseClickTextFromData":"fourth","ARCMouseClickTextOpacity":1,"ARCMouseClickTextColor":"red","ARCMouseClickTextSize":8,"ARCMouseClickTextPostionX":0,"ARCMouseClickTextPostionY":0,"ARCMouseClickTextDrag":true,"ARCMouseDownDisplay":false,"ARCMouseDownColor":"green","ARCMouseDownArcOpacity":1,"ARCMouseDownArcStrokeColor":"#F26223","ARCMouseDownArcStrokeWidth":0,"ARCMouseEnterDisplay":false,"ARCMouseEnterColor":"yellow","ARCMouseEnterArcOpacity":1,"ARCMouseEnterArcStrokeColor":"#F26223","ARCMouseEnterArcStrokeWidth":0,"ARCMouseLeaveDisplay":false,"ARCMouseLeaveColor":"pink","ARCMouseLeaveArcOpacity":1,"ARCMouseLeaveArcStrokeColor":"#F26223","ARCMouseLeaveArcStrokeWidth":0,"ARCMouseMoveDisplay":false,"ARCMouseMoveColor":"red","ARCMouseMoveArcOpacity":1,"ARCMouseMoveArcStrokeColor":"#F26223","ARCMouseMoveArcStrokeWidth":0,"ARCMouseOutDisplay":true,"ARCMouseOutAnimationTime":500,"ARCMouseOutColor":"none","ARCMouseOutArcOpacity":"none","ARCMouseOutArcStrokeColor":"red","ARCMouseOutArcStrokeWidth":0,"ARCMouseUpDisplay":false,"ARCMouseUpColor":"grey","ARCMouseUpArcOpacity":1,"ARCMouseUpArcStrokeColor":"#F26223","ARCMouseUpArcStrokeWidth":0,"ARCMouseOverDisplay":true,"ARCMouseOverColor":"#FF0000","ARCMouseOverArcOpacity":0.9,"ARCMouseOverArcStrokeColor":"#F26223","ARCMouseOverArcStrokeWidth":3,"ARCMouseOverTooltipsHtml01":"Chromosome: ","ARCMouseOverTooltipsHtml02":"<br/>Start: ","ARCMouseOverTooltipsHtml03":"<br/>End: ","ARCMouseOverTooltipsHtml04":"<br/>","ARCMouseOverTooltipsHtml05":"","ARCMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseEvent":true,"HISTOGRAMMouseClickDisplay":false,"HISTOGRAMMouseClickColor":"red","HISTOGRAMMouseClickOpacity":1,"HISTOGRAMMouseClickStrokeColor":"none","HISTOGRAMMouseClickStrokeWidth":"none","HISTOGRAMMouseDownDisplay":false,"HISTOGRAMMouseDownColor":"red","HISTOGRAMMouseDownOpacity":1,"HISTOGRAMMouseDownStrokeColor":"none","HISTOGRAMMouseDownStrokeWidth":"none","HISTOGRAMMouseEnterDisplay":false,"HISTOGRAMMouseEnterColor":"red","HISTOGRAMMouseEnterOpacity":1,"HISTOGRAMMouseEnterStrokeColor":"none","HISTOGRAMMouseEnterStrokeWidth":"none","HISTOGRAMMouseLeaveDisplay":false,"HISTOGRAMMouseLeaveColor":"red","HISTOGRAMMouseLeaveOpacity":1,"HISTOGRAMMouseLeaveStrokeColor":"none","HISTOGRAMMouseLeaveStrokeWidth":"none","HISTOGRAMMouseMoveDisplay":false,"HISTOGRAMMouseMoveColor":"red","HISTOGRAMMouseMoveOpacity":1,"HISTOGRAMMouseMoveStrokeColor":"none","HISTOGRAMMouseMoveStrokeWidth":"none","HISTOGRAMMouseOutDisplay":true,"HISTOGRAMMouseOutAnimationTime":500,"HISTOGRAMMouseOutColor":"none","HISTOGRAMMouseOutOpacity":1,"HISTOGRAMMouseOutStrokeColor":"none","HISTOGRAMMouseOutStrokeWidth":"none","HISTOGRAMMouseUpDisplay":false,"HISTOGRAMMouseUpColor":"red","HISTOGRAMMouseUpOpacity":1,"HISTOGRAMMouseUpStrokeColor":"none","HISTOGRAMMouseUpStrokeWidth":"none","HISTOGRAMMouseOverDisplay":true,"HISTOGRAMMouseOverColor":"#FF0000","HISTOGRAMMouseOverOpacity":0.9,"HISTOGRAMMouseOverStrokeColor":"none","HISTOGRAMMouseOverStrokeWidth":"none","HISTOGRAMMouseOverTooltipsHtml01":"Chromosome: ","HISTOGRAMMouseOverTooltipsHtml02":"<br/>Start: ","HISTOGRAMMouseOverTooltipsHtml03":" End: ","HISTOGRAMMouseOverTooltipsHtml04":"<br/>","HISTOGRAMMouseOverTooltipsHtml05":"<br/>Value: ","HISTOGRAMMouseOverTooltipsHtml06":"","HISTOGRAMMouseOverTooltipsPosition":"absolute","HISTOGRAMMouseOverTooltipsBackgroundColor":"white","HISTOGRAMMouseOverTooltipsBorderStyle":"solid","HISTOGRAMMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseOverTooltipsPadding":"3px","HISTOGRAMMouseOverTooltipsBorderRadius":"3px","HISTOGRAMMouseOverTooltipsOpacity":0.8,"HEATMAPMouseEvent":true,"HEATMAPMouseClickDisplay":false,"HEATMAPMouseClickColor":"green","HEATMAPMouseClickOpacity":1,"HEATMAPMouseClickStrokeColor":"none","HEATMAPMouseClickStrokeWidth":"none","HEATMAPMouseDownDisplay":false,"HEATMAPMouseDownColor":"green","HEATMAPMouseDownOpacity":1,"HEATMAPMouseDownStrokeColor":"none","HEATMAPMouseDownStrokeWidth":"none","HEATMAPMouseEnterDisplay":false,"HEATMAPMouseEnterColor":"green","HEATMAPMouseEnterOpacity":1,"HEATMAPMouseEnterStrokeColor":"none","HEATMAPMouseEnterStrokeWidth":"none","HEATMAPMouseLeaveDisplay":false,"HEATMAPMouseLeaveColor":"green","HEATMAPMouseLeaveOpacity":1,"HEATMAPMouseLeaveStrokeColor":"none","HEATMAPMouseLeaveStrokeWidth":"none","HEATMAPMouseMoveDisplay":false,"HEATMAPMouseMoveColor":"green","HEATMAPMouseMoveOpacity":1,"HEATMAPMouseMoveStrokeColor":"none","HEATMAPMouseMoveStrokeWidth":"none","HEATMAPMouseOutDisplay":true,"HEATMAPMouseOutAnimationTime":500,"HEATMAPMouseOutColor":"none","HEATMAPMouseOutOpacity":1,"HEATMAPMouseOutStrokeColor":"none","HEATMAPMouseOutStrokeWidth":"none","HEATMAPMouseUpDisplay":false,"HEATMAPMouseUpColor":"green","HEATMAPMouseUpOpacity":1,"HEATMAPMouseUpStrokeColor":"none","HEATMAPMouseUpStrokeWidth":"none","HEATMAPMouseOverDisplay":true,"HEATMAPMouseOverColor":"#FF0000","HEATMAPMouseOverOpacity":0.9,"HEATMAPMouseOverStrokeColor":"none","HEATMAPMouseOverStrokeWidth":"none","HEATMAPMouseOverTooltipsHtml01":"Chromosome: ","HEATMAPMouseOverTooltipsHtml02":"<br/>Start: ","HEATMAPMouseOverTooltipsHtml03":" End: ","HEATMAPMouseOverTooltipsHtml04":"<br/>","HEATMAPMouseOverTooltipsHtml05":"<br/>Value: ","HEATMAPMouseOverTooltipsHtml06":"","HEATMAPMouseOverTooltipsPosition":"absolute","HEATMAPMouseOverTooltipsBackgroundColor":"white","HEATMAPMouseOverTooltipsBorderStyle":"solid","HEATMAPMouseOverTooltipsBorderWidth":"1px","HEATMAPMouseOverTooltipsPadding":"3px","HEATMAPMouseOverTooltipsBorderRadius":"3px","HEATMAPMouseOverTooltipsOpacity":0.8,"LINKMouseEvent":true,"LINKMouseClickDisplay":false,"LINKMouseClickColor":"red","LINKMouseClickTextFromData":"fourth","LINKMouseClickTextOpacity":1,"LINKMouseClickTextColor":"red","LINKMouseClickTextSize":8,"LINKMouseClickTextPostionX":0,"LINKMouseClickTextPostionY":0,"LINKMouseClickTextDrag":true,"LINKMouseDownDisplay":false,"LINKMouseDownColor":"green","LINKMouseEnterDisplay":false,"LINKMouseEnterColor":"yellow","LINKMouseLeaveDisplay":false,"LINKMouseLeaveColor":"pink","LINKMouseMoveDisplay":false,"LINKMouseMoveColor":"red","LINKMouseOutDisplay":true,"LINKMouseOutAnimationTime":500,"LINKMouseOutStrokeColor":"none","LINKMouseUpDisplay":false,"LINKMouseUpColor":"grey","LINKMouseOverOpacity":0.9,"LINKMouseOverDisplay":true,"LINKMouseOverStrokeColor":"#FF00FF","LINKMouseOverTooltipsHtml01":"Fusion: ","LINKMouseOverTooltipsHtml02":"","LINKMouseOverStrokeWidth":5,"LINKMouseOutStrokeWidth":"none","LINKMouseOverTooltipsBorderWidth":"1px","LINEMouseEvent":true,"LINEMouseClickDisplay":false,"LINEMouseClickLineOpacity":1,"LINEMouseClickLineStrokeColor":"red","LINEMouseClickLineStrokeWidth":"none","LINEMouseDownDisplay":false,"LINEMouseDownLineOpacity":1,"LINEMouseDownLineStrokeColor":"red","LINEMouseDownLineStrokeWidth":"none","LINEMouseEnterDisplay":false,"LINEMouseEnterLineOpacity":1,"LINEMouseEnterLineStrokeColor":"red","LINEMouseEnterLineStrokeWidth":"none","LINEMouseLeaveDisplay":false,"LINEMouseLeaveLineOpacity":1,"LINEMouseLeaveLineStrokeColor":"red","LINEMouseLeaveLineStrokeWidth":"none","LINEMouseMoveDisplay":false,"LINEMouseMoveLineOpacity":1,"LINEMouseMoveLineStrokeColor":"red","LINEMouseMoveLineStrokeWidth":"none","LINEMouseOutDisplay":true,"LINEMouseOutAnimationTime":500,"LINEMouseOutLineOpacity":"none","LINEMouseOutLineStrokeColor":"none","LINEMouseOutLineStrokeWidth":"none","LINEMouseUpDisplay":false,"LINEMouseUpLineOpacity":1,"LINEMouseUpLineStrokeColor":"red","LINEMouseUpLineStrokeWidth":"none","LINEMouseOverDisplay":true,"LINEMouseOverLineOpacity":1,"LINEMouseOverLineStrokeColor":"#FF0000","LINEMouseOverLineStrokeWidth":"none","LINEMouseOverTooltipsHtml01":"Line","LINEMouseOverTooltipsPosition":"absolute","LINEMouseOverTooltipsBackgroundColor":"white","LINEMouseOverTooltipsBorderStyle":"solid","LINEMouseOverTooltipsBorderWidth":0,"LINEMouseOverTooltipsPadding":"3px","LINEMouseOverTooltipsBorderRadius":"3px","LINEMouseOverTooltipsOpacity":0.8,"CNVMouseEvent":true,"CNVMouseClickDisplay":false,"CNVMouseClickColor":"red","CNVMouseClickArcOpacity":1,"CNVMouseClickArcStrokeColor":"#F26223","CNVMouseClickArcStrokeWidth":0,"CNVMouseClickTextFromData":"fourth","CNVMouseClickTextOpacity":1,"CNVMouseClickTextColor":"red","CNVMouseClickTextSize":8,"CNVMouseClickTextPostionX":0,"CNVMouseClickTextPostionY":0,"CNVMouseClickTextDrag":true,"CNVMouseDownDisplay":false,"CNVMouseDownColor":"green","CNVMouseDownArcOpacity":1,"CNVMouseDownArcStrokeColor":"#F26223","CNVMouseDownArcStrokeWidth":0,"CNVMouseEnterDisplay":false,"CNVMouseEnterColor":"yellow","CNVMouseEnterArcOpacity":1,"CNVMouseEnterArcStrokeColor":"#F26223","CNVMouseEnterArcStrokeWidth":0,"CNVMouseLeaveDisplay":false,"CNVMouseLeaveColor":"pink","CNVMouseLeaveArcOpacity":1,"CNVMouseLeaveArcStrokeColor":"#F26223","CNVMouseLeaveArcStrokeWidth":0,"CNVMouseMoveDisplay":false,"CNVMouseMoveColor":"red","CNVMouseMoveArcOpacity":1,"CNVMouseMoveArcStrokeColor":"#F26223","CNVMouseMoveArcStrokeWidth":0,"CNVMouseOutDisplay":true,"CNVMouseOutAnimationTime":500,"CNVMouseOutColor":"none","CNVMouseOutArcOpacity":1,"CNVMouseOutArcStrokeColor":"none","CNVMouseOutArcStrokeWidth":0,"CNVMouseUpDisplay":false,"CNVMouseUpColor":"grey","CNVMouseUpArcOpacity":1,"CNVMouseUpArcStrokeColor":"#F26223","CNVMouseUpArcStrokeWidth":0,"CNVMouseOverDisplay":true,"CNVMouseOverColor":"#FF0000","CNVMouseOverArcOpacity":0.9,"CNVMouseOverArcStrokeColor":"#F26223","CNVMouseOverArcStrokeWidth":3,"CNVMouseOverTooltipsHtml01":"Chromosome: ","CNVMouseOverTooltipsHtml02":"<br>Start: ","CNVMouseOverTooltipsHtml03":"<br>End: ","CNVMouseOverTooltipsHtml04":"<br>Value: ","CNVMouseOverTooltipsHtml05":"","CNVMouseOverTooltipsPosition":"absolute","CNVMouseOverTooltipsBackgroundColor":"white","CNVMouseOverTooltipsBorderStyle":"solid","CNVMouseOverTooltipsBorderWidth":"1px","CNVMouseOverTooltipsPadding":"3px","CNVMouseOverTooltipsBorderRadius":"3px","CNVMouseOverTooltipsOpacity":0.8},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="h8" class="section level2">
+<h2>H8</h2>
+<div class="BioCircos html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-e7caa58884ced2907e90" style="width:576px;height:576px;"></div>
+<script type="application/json" data-for="htmlwidget-e7caa58884ced2907e90">{"x":{"message":["function (..., domain = NULL, appendLF = TRUE) ","{","    cond <- if (...length() == 1L && inherits(..1, \"condition\")) {","        if (nargs() > 1L) ","            warning(\"additional arguments ignored in message()\")","        ..1","    }","    else {","        msg <- .makeMessage(..., domain = domain, appendLF = appendLF)","        call <- sys.call()","        simpleMessage(msg, call)","    }","    defaultHandler <- function(c) {","        cat(conditionMessage(c), file = stderr(), sep = \"\")","    }","    withRestarts({","        signalCondition(cond)","        defaultHandler(cond)","    }, muffleMessage = function() NULL)","    invisible()","}"],"tracklist":[["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"#CC0000","CNVwidth":2,"range":[0,6]},[{"chr":"11","start":"5000001","end":"48000000","value":"1"},{"chr":"11","start":"56000001","end":"63000000","value":"1"},{"chr":"11","start":"64000001","end":"67000000","value":"1"},{"chr":"11","start":"72000001","end":"89000000","value":"1"},{"chr":"11","start":"91000001","end":"135000000","value":"1"},{"chr":"20","start":"1","end":"25000000","value":"1"},{"chr":"20","start":"32000001","end":"64000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"blue","CNVwidth":2,"range":[0,6]},[{"chr":"20","start":"1","end":"25000000","value":"2"},{"chr":"20","start":"32000001","end":"64000000","value":"2"},{"chr":"7","start":"104000001","end":"128000000","value":"2"},{"chr":"7","start":"129000001","end":"143000000","value":"2"},{"chr":"7","start":"154000001","end":"159000000","value":"2"},{"chr":"7","start":"36000001","end":"45000000","value":"2"},{"chr":"7","start":"7000001","end":"32000000","value":"2"},{"chr":"7","start":"78000001","end":"97000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}],["CNV_plasma_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"pink","CNVwidth":2,"range":[0,6]},[{"chr":"13","start":"20000001","end":"52000000","value":"1"},{"chr":"13","start":"53000001","end":"111000000","value":"1"},{"chr":"21","start":"14000001","end":"43000000","value":"1"},{"chr":"2","start":"114000001","end":"130000000","value":"1"},{"chr":"2","start":"133000001","end":"242000000","value":"1"},{"chr":"2","start":"1","end":"86000000","value":"1"},{"chr":"2","start":"98000001","end":"106000000","value":"1"},{"chr":"3","start":"126000001","end":"130000000","value":"1"},{"chr":"3","start":"131000001","end":"195000000","value":"1"},{"chr":"3","start":"196000001","end":"198000000","value":"1"},{"chr":"3","start":"1","end":"75000000","value":"1"},{"chr":"3","start":"95000001","end":"125000000","value":"1"},{"chr":"4","start":"10000001","end":"48000000","value":"1"},{"chr":"4","start":"103000001","end":"118000000","value":"1"},{"chr":"4","start":"132000001","end":"143000000","value":"1"},{"chr":"4","start":"145000001","end":"189000000","value":"1"},{"chr":"4","start":"1","end":"3000000","value":"1"},{"chr":"4","start":"52000001","end":"69000000","value":"1"},{"chr":"4","start":"70000001","end":"102000000","value":"1"},{"chr":"5","start":"1000001","end":"17000000","value":"1"},{"chr":"5","start":"101000001","end":"176000000","value":"1"},{"chr":"5","start":"178000001","end":"181000000","value":"1"},{"chr":"5","start":"35000001","end":"45000000","value":"1"},{"chr":"5","start":"52000001","end":"69000000","value":"1"},{"chr":"5","start":"72000001","end":"99000000","value":"1"},{"chr":"6","start":"1000001","end":"26000000","value":"1"},{"chr":"6","start":"27000001","end":"57000000","value":"1"},{"chr":"6","start":"63000001","end":"86000000","value":"1"},{"chr":"6","start":"87000001","end":"167000000","value":"1"},{"chr":"7","start":"104000001","end":"128000000","value":"1"},{"chr":"7","start":"129000001","end":"143000000","value":"1"},{"chr":"7","start":"154000001","end":"159000000","value":"1"},{"chr":"7","start":"1","end":"5000000","value":"1"},{"chr":"7","start":"36000001","end":"45000000","value":"1"},{"chr":"7","start":"68000001","end":"72000000","value":"1"},{"chr":"7","start":"7000001","end":"32000000","value":"1"},{"chr":"7","start":"78000001","end":"97000000","value":"1"}]],["CNV_tumor_track",{"maxRadius":0.9,"minRadius":0.5,"CNVColor":"lightblue","CNVwidth":2,"range":[0,6]},[{"chr":"10","start":"1000001","end":"37000000","value":"2"},{"chr":"10","start":"43000001","end":"45000000","value":"2"},{"chr":"10","start":"51000001","end":"79000000","value":"2"},{"chr":"10","start":"80000001","end":"87000000","value":"2"},{"chr":"10","start":"88000001","end":"133000000","value":"2"},{"chr":"13","start":"21000001","end":"52000000","value":"2"},{"chr":"13","start":"53000001","end":"111000000","value":"2"},{"chr":"14","start":"20000001","end":"105000000","value":"2"},{"chr":"15","start":"37000001","end":"43000000","value":"2"},{"chr":"3","start":"126000001","end":"130000000","value":"2"},{"chr":"3","start":"131000001","end":"154000000","value":"2"},{"chr":"3","start":"196000001","end":"198000000","value":"2"},{"chr":"3","start":"1","end":"48000000","value":"2"},{"chr":"3","start":"52000001","end":"75000000","value":"2"},{"chr":"3","start":"95000001","end":"125000000","value":"2"},{"chr":"6","start":"70000001","end":"86000000","value":"2"},{"chr":"6","start":"87000001","end":"167000000","value":"2"},{"chr":"9","start":"1000001","end":"33000000","value":"2"},{"chr":"9","start":"34000001","end":"38000000","value":"2"},{"chr":"9","start":"69000001","end":"94000000","value":"2"},{"chr":"9","start":"95000001","end":"138000000","value":"2"}]],["BACKGROUND_arcs_background",{"BgouterRadius":0.9,"BginnerRadius":0.5,"BgFillColor":"#EEEEFF","BgborderColor":"#000000","BgborderSize":0.3}]],"genome":{"1":248956422,"2":242193529,"3":198295559,"4":190214555,"5":181538259,"6":170805979,"7":159345973,"8":145138636,"9":138394717,"10":133797422,"11":135086622,"12":133275309,"13":114364328,"14":107043718,"15":101991189,"16":90338345,"17":83257441,"18":80373285,"19":58617616,"20":64444167,"21":46709983,"22":50818468,"X":156040895,"Y":57227415},"genomeFillColor":["#FFFFE5","#FFFCD8","#FFFACC","#FFF7BF","#FEF2B2","#FEECA5","#FEE698","#FEDE88","#FED574","#FECC60","#FEC24D","#FEB541","#FEA736","#FE9A2A","#F98E23","#F3811D","#EE7516","#E66910","#DC5E0B","#D25305","#C64902","#B23F02","#9F3603","#8C2D04"],"chrPad":0.04,"displayGenomeBorder":true,"genomeBorderColor":"#000","genomeBorderSize":0.5,"genomeTicksDisplay":false,"genomeTicksLen":5,"genomeTicksColor":"#000","genomeTicksTextSize":"0.6em","genomeTicksTextColor":"#000","genomeTicksScale":30000000,"genomeLabelDisplay":true,"genomeLabelTextSize":"10pt","genomeLabelTextColor":"#000","genomeLabelDx":0,"genomeLabelDy":0,"genomeLabelOrientation":0,"SNPMouseEvent":true,"SNPMouseClickDisplay":false,"SNPMouseClickColor":"red","SNPMouseClickCircleSize":4,"SNPMouseClickCircleOpacity":1,"SNPMouseClickCircleStrokeColor":"#F26223","SNPMouseClickCircleStrokeWidth":0,"SNPMouseClickTextFromData":"fourth","SNPMouseClickTextOpacity":1,"SNPMouseClickTextColor":"red","SNPMouseClickTextSize":8,"SNPMouseClickTextPostionX":1,"SNPMouseClickTextPostionY":10,"SNPMouseClickTextDrag":true,"SNPMouseDownDisplay":false,"SNPMouseDownColor":"green","SNPMouseDownCircleSize":4,"SNPMouseDownCircleOpacity":1,"SNPMouseDownCircleStrokeColor":"#F26223","SNPMouseDownCircleStrokeWidth":0,"SNPMouseEnterDisplay":false,"SNPMouseEnterColor":"yellow","SNPMouseEnterCircleSize":4,"SNPMouseEnterCircleOpacity":1,"SNPMouseEnterCircleStrokeColor":"#F26223","SNPMouseEnterCircleStrokeWidth":0,"SNPMouseLeaveDisplay":false,"SNPMouseLeaveColor":"pink","SNPMouseLeaveCircleSize":4,"SNPMouseLeaveCircleOpacity":1,"SNPMouseLeaveCircleStrokeColor":"#F26223","SNPMouseLeaveCircleStrokeWidth":0,"SNPMouseMoveDisplay":false,"SNPMouseMoveColor":"red","SNPMouseMoveCircleSize":2,"SNPMouseMoveCircleOpacity":1,"SNPMouseMoveCircleStrokeColor":"#F26223","SNPMouseMoveCircleStrokeWidth":0,"SNPMouseOutDisplay":true,"SNPMouseOutAnimationTime":500,"SNPMouseOutColor":"none","SNPMouseOutCircleSize":2,"SNPMouseOutCircleOpacity":"none","SNPMouseOutCircleStrokeColor":"red","SNPMouseOutCircleStrokeWidth":0,"SNPMouseUpDisplay":false,"SNPMouseUpColor":"grey","SNPMouseUpCircleSize":4,"SNPMouseUpCircleOpacity":1,"SNPMouseUpCircleStrokeColor":"#F26223","SNPMouseUpCircleStrokeWidth":0,"SNPMouseOverDisplay":true,"SNPMouseOverColor":"#FF0000","SNPMouseOverCircleSize":3,"SNPMouseOverCircleOpacity":0.9,"SNPMouseOverCircleStrokeColor":"#F26223","SNPMouseOverCircleStrokeWidth":1,"SNPMouseOverTooltipsHtml01":"Chromosome: ","SNPMouseOverTooltipsHtml02":"<br/>Position: ","SNPMouseOverTooltipsHtml03":"<br/>Value: ","SNPMouseOverTooltipsHtml04":"<br/>","SNPMouseOverTooltipsHtml05":"","SNPMouseOverTooltipsBorderWidth":"1px","zoom":true,"TEXTModuleDragEvent":false,"ARCMouseEvent":true,"ARCMouseClickDisplay":false,"ARCMouseClickColor":"red","ARCMouseClickArcOpacity":1,"ARCMouseClickArcStrokeColor":"#F26223","ARCMouseClickArcStrokeWidth":1,"ARCMouseClickTextFromData":"fourth","ARCMouseClickTextOpacity":1,"ARCMouseClickTextColor":"red","ARCMouseClickTextSize":8,"ARCMouseClickTextPostionX":0,"ARCMouseClickTextPostionY":0,"ARCMouseClickTextDrag":true,"ARCMouseDownDisplay":false,"ARCMouseDownColor":"green","ARCMouseDownArcOpacity":1,"ARCMouseDownArcStrokeColor":"#F26223","ARCMouseDownArcStrokeWidth":0,"ARCMouseEnterDisplay":false,"ARCMouseEnterColor":"yellow","ARCMouseEnterArcOpacity":1,"ARCMouseEnterArcStrokeColor":"#F26223","ARCMouseEnterArcStrokeWidth":0,"ARCMouseLeaveDisplay":false,"ARCMouseLeaveColor":"pink","ARCMouseLeaveArcOpacity":1,"ARCMouseLeaveArcStrokeColor":"#F26223","ARCMouseLeaveArcStrokeWidth":0,"ARCMouseMoveDisplay":false,"ARCMouseMoveColor":"red","ARCMouseMoveArcOpacity":1,"ARCMouseMoveArcStrokeColor":"#F26223","ARCMouseMoveArcStrokeWidth":0,"ARCMouseOutDisplay":true,"ARCMouseOutAnimationTime":500,"ARCMouseOutColor":"none","ARCMouseOutArcOpacity":"none","ARCMouseOutArcStrokeColor":"red","ARCMouseOutArcStrokeWidth":0,"ARCMouseUpDisplay":false,"ARCMouseUpColor":"grey","ARCMouseUpArcOpacity":1,"ARCMouseUpArcStrokeColor":"#F26223","ARCMouseUpArcStrokeWidth":0,"ARCMouseOverDisplay":true,"ARCMouseOverColor":"#FF0000","ARCMouseOverArcOpacity":0.9,"ARCMouseOverArcStrokeColor":"#F26223","ARCMouseOverArcStrokeWidth":3,"ARCMouseOverTooltipsHtml01":"Chromosome: ","ARCMouseOverTooltipsHtml02":"<br/>Start: ","ARCMouseOverTooltipsHtml03":"<br/>End: ","ARCMouseOverTooltipsHtml04":"<br/>","ARCMouseOverTooltipsHtml05":"","ARCMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseEvent":true,"HISTOGRAMMouseClickDisplay":false,"HISTOGRAMMouseClickColor":"red","HISTOGRAMMouseClickOpacity":1,"HISTOGRAMMouseClickStrokeColor":"none","HISTOGRAMMouseClickStrokeWidth":"none","HISTOGRAMMouseDownDisplay":false,"HISTOGRAMMouseDownColor":"red","HISTOGRAMMouseDownOpacity":1,"HISTOGRAMMouseDownStrokeColor":"none","HISTOGRAMMouseDownStrokeWidth":"none","HISTOGRAMMouseEnterDisplay":false,"HISTOGRAMMouseEnterColor":"red","HISTOGRAMMouseEnterOpacity":1,"HISTOGRAMMouseEnterStrokeColor":"none","HISTOGRAMMouseEnterStrokeWidth":"none","HISTOGRAMMouseLeaveDisplay":false,"HISTOGRAMMouseLeaveColor":"red","HISTOGRAMMouseLeaveOpacity":1,"HISTOGRAMMouseLeaveStrokeColor":"none","HISTOGRAMMouseLeaveStrokeWidth":"none","HISTOGRAMMouseMoveDisplay":false,"HISTOGRAMMouseMoveColor":"red","HISTOGRAMMouseMoveOpacity":1,"HISTOGRAMMouseMoveStrokeColor":"none","HISTOGRAMMouseMoveStrokeWidth":"none","HISTOGRAMMouseOutDisplay":true,"HISTOGRAMMouseOutAnimationTime":500,"HISTOGRAMMouseOutColor":"none","HISTOGRAMMouseOutOpacity":1,"HISTOGRAMMouseOutStrokeColor":"none","HISTOGRAMMouseOutStrokeWidth":"none","HISTOGRAMMouseUpDisplay":false,"HISTOGRAMMouseUpColor":"red","HISTOGRAMMouseUpOpacity":1,"HISTOGRAMMouseUpStrokeColor":"none","HISTOGRAMMouseUpStrokeWidth":"none","HISTOGRAMMouseOverDisplay":true,"HISTOGRAMMouseOverColor":"#FF0000","HISTOGRAMMouseOverOpacity":0.9,"HISTOGRAMMouseOverStrokeColor":"none","HISTOGRAMMouseOverStrokeWidth":"none","HISTOGRAMMouseOverTooltipsHtml01":"Chromosome: ","HISTOGRAMMouseOverTooltipsHtml02":"<br/>Start: ","HISTOGRAMMouseOverTooltipsHtml03":" End: ","HISTOGRAMMouseOverTooltipsHtml04":"<br/>","HISTOGRAMMouseOverTooltipsHtml05":"<br/>Value: ","HISTOGRAMMouseOverTooltipsHtml06":"","HISTOGRAMMouseOverTooltipsPosition":"absolute","HISTOGRAMMouseOverTooltipsBackgroundColor":"white","HISTOGRAMMouseOverTooltipsBorderStyle":"solid","HISTOGRAMMouseOverTooltipsBorderWidth":"1px","HISTOGRAMMouseOverTooltipsPadding":"3px","HISTOGRAMMouseOverTooltipsBorderRadius":"3px","HISTOGRAMMouseOverTooltipsOpacity":0.8,"HEATMAPMouseEvent":true,"HEATMAPMouseClickDisplay":false,"HEATMAPMouseClickColor":"green","HEATMAPMouseClickOpacity":1,"HEATMAPMouseClickStrokeColor":"none","HEATMAPMouseClickStrokeWidth":"none","HEATMAPMouseDownDisplay":false,"HEATMAPMouseDownColor":"green","HEATMAPMouseDownOpacity":1,"HEATMAPMouseDownStrokeColor":"none","HEATMAPMouseDownStrokeWidth":"none","HEATMAPMouseEnterDisplay":false,"HEATMAPMouseEnterColor":"green","HEATMAPMouseEnterOpacity":1,"HEATMAPMouseEnterStrokeColor":"none","HEATMAPMouseEnterStrokeWidth":"none","HEATMAPMouseLeaveDisplay":false,"HEATMAPMouseLeaveColor":"green","HEATMAPMouseLeaveOpacity":1,"HEATMAPMouseLeaveStrokeColor":"none","HEATMAPMouseLeaveStrokeWidth":"none","HEATMAPMouseMoveDisplay":false,"HEATMAPMouseMoveColor":"green","HEATMAPMouseMoveOpacity":1,"HEATMAPMouseMoveStrokeColor":"none","HEATMAPMouseMoveStrokeWidth":"none","HEATMAPMouseOutDisplay":true,"HEATMAPMouseOutAnimationTime":500,"HEATMAPMouseOutColor":"none","HEATMAPMouseOutOpacity":1,"HEATMAPMouseOutStrokeColor":"none","HEATMAPMouseOutStrokeWidth":"none","HEATMAPMouseUpDisplay":false,"HEATMAPMouseUpColor":"green","HEATMAPMouseUpOpacity":1,"HEATMAPMouseUpStrokeColor":"none","HEATMAPMouseUpStrokeWidth":"none","HEATMAPMouseOverDisplay":true,"HEATMAPMouseOverColor":"#FF0000","HEATMAPMouseOverOpacity":0.9,"HEATMAPMouseOverStrokeColor":"none","HEATMAPMouseOverStrokeWidth":"none","HEATMAPMouseOverTooltipsHtml01":"Chromosome: ","HEATMAPMouseOverTooltipsHtml02":"<br/>Start: ","HEATMAPMouseOverTooltipsHtml03":" End: ","HEATMAPMouseOverTooltipsHtml04":"<br/>","HEATMAPMouseOverTooltipsHtml05":"<br/>Value: ","HEATMAPMouseOverTooltipsHtml06":"","HEATMAPMouseOverTooltipsPosition":"absolute","HEATMAPMouseOverTooltipsBackgroundColor":"white","HEATMAPMouseOverTooltipsBorderStyle":"solid","HEATMAPMouseOverTooltipsBorderWidth":"1px","HEATMAPMouseOverTooltipsPadding":"3px","HEATMAPMouseOverTooltipsBorderRadius":"3px","HEATMAPMouseOverTooltipsOpacity":0.8,"LINKMouseEvent":true,"LINKMouseClickDisplay":false,"LINKMouseClickColor":"red","LINKMouseClickTextFromData":"fourth","LINKMouseClickTextOpacity":1,"LINKMouseClickTextColor":"red","LINKMouseClickTextSize":8,"LINKMouseClickTextPostionX":0,"LINKMouseClickTextPostionY":0,"LINKMouseClickTextDrag":true,"LINKMouseDownDisplay":false,"LINKMouseDownColor":"green","LINKMouseEnterDisplay":false,"LINKMouseEnterColor":"yellow","LINKMouseLeaveDisplay":false,"LINKMouseLeaveColor":"pink","LINKMouseMoveDisplay":false,"LINKMouseMoveColor":"red","LINKMouseOutDisplay":true,"LINKMouseOutAnimationTime":500,"LINKMouseOutStrokeColor":"none","LINKMouseUpDisplay":false,"LINKMouseUpColor":"grey","LINKMouseOverOpacity":0.9,"LINKMouseOverDisplay":true,"LINKMouseOverStrokeColor":"#FF00FF","LINKMouseOverTooltipsHtml01":"Fusion: ","LINKMouseOverTooltipsHtml02":"","LINKMouseOverStrokeWidth":5,"LINKMouseOutStrokeWidth":"none","LINKMouseOverTooltipsBorderWidth":"1px","LINEMouseEvent":true,"LINEMouseClickDisplay":false,"LINEMouseClickLineOpacity":1,"LINEMouseClickLineStrokeColor":"red","LINEMouseClickLineStrokeWidth":"none","LINEMouseDownDisplay":false,"LINEMouseDownLineOpacity":1,"LINEMouseDownLineStrokeColor":"red","LINEMouseDownLineStrokeWidth":"none","LINEMouseEnterDisplay":false,"LINEMouseEnterLineOpacity":1,"LINEMouseEnterLineStrokeColor":"red","LINEMouseEnterLineStrokeWidth":"none","LINEMouseLeaveDisplay":false,"LINEMouseLeaveLineOpacity":1,"LINEMouseLeaveLineStrokeColor":"red","LINEMouseLeaveLineStrokeWidth":"none","LINEMouseMoveDisplay":false,"LINEMouseMoveLineOpacity":1,"LINEMouseMoveLineStrokeColor":"red","LINEMouseMoveLineStrokeWidth":"none","LINEMouseOutDisplay":true,"LINEMouseOutAnimationTime":500,"LINEMouseOutLineOpacity":"none","LINEMouseOutLineStrokeColor":"none","LINEMouseOutLineStrokeWidth":"none","LINEMouseUpDisplay":false,"LINEMouseUpLineOpacity":1,"LINEMouseUpLineStrokeColor":"red","LINEMouseUpLineStrokeWidth":"none","LINEMouseOverDisplay":true,"LINEMouseOverLineOpacity":1,"LINEMouseOverLineStrokeColor":"#FF0000","LINEMouseOverLineStrokeWidth":"none","LINEMouseOverTooltipsHtml01":"Line","LINEMouseOverTooltipsPosition":"absolute","LINEMouseOverTooltipsBackgroundColor":"white","LINEMouseOverTooltipsBorderStyle":"solid","LINEMouseOverTooltipsBorderWidth":0,"LINEMouseOverTooltipsPadding":"3px","LINEMouseOverTooltipsBorderRadius":"3px","LINEMouseOverTooltipsOpacity":0.8,"CNVMouseEvent":true,"CNVMouseClickDisplay":false,"CNVMouseClickColor":"red","CNVMouseClickArcOpacity":1,"CNVMouseClickArcStrokeColor":"#F26223","CNVMouseClickArcStrokeWidth":0,"CNVMouseClickTextFromData":"fourth","CNVMouseClickTextOpacity":1,"CNVMouseClickTextColor":"red","CNVMouseClickTextSize":8,"CNVMouseClickTextPostionX":0,"CNVMouseClickTextPostionY":0,"CNVMouseClickTextDrag":true,"CNVMouseDownDisplay":false,"CNVMouseDownColor":"green","CNVMouseDownArcOpacity":1,"CNVMouseDownArcStrokeColor":"#F26223","CNVMouseDownArcStrokeWidth":0,"CNVMouseEnterDisplay":false,"CNVMouseEnterColor":"yellow","CNVMouseEnterArcOpacity":1,"CNVMouseEnterArcStrokeColor":"#F26223","CNVMouseEnterArcStrokeWidth":0,"CNVMouseLeaveDisplay":false,"CNVMouseLeaveColor":"pink","CNVMouseLeaveArcOpacity":1,"CNVMouseLeaveArcStrokeColor":"#F26223","CNVMouseLeaveArcStrokeWidth":0,"CNVMouseMoveDisplay":false,"CNVMouseMoveColor":"red","CNVMouseMoveArcOpacity":1,"CNVMouseMoveArcStrokeColor":"#F26223","CNVMouseMoveArcStrokeWidth":0,"CNVMouseOutDisplay":true,"CNVMouseOutAnimationTime":500,"CNVMouseOutColor":"none","CNVMouseOutArcOpacity":1,"CNVMouseOutArcStrokeColor":"none","CNVMouseOutArcStrokeWidth":0,"CNVMouseUpDisplay":false,"CNVMouseUpColor":"grey","CNVMouseUpArcOpacity":1,"CNVMouseUpArcStrokeColor":"#F26223","CNVMouseUpArcStrokeWidth":0,"CNVMouseOverDisplay":true,"CNVMouseOverColor":"#FF0000","CNVMouseOverArcOpacity":0.9,"CNVMouseOverArcStrokeColor":"#F26223","CNVMouseOverArcStrokeWidth":3,"CNVMouseOverTooltipsHtml01":"Chromosome: ","CNVMouseOverTooltipsHtml02":"<br>Start: ","CNVMouseOverTooltipsHtml03":"<br>End: ","CNVMouseOverTooltipsHtml04":"<br>Value: ","CNVMouseOverTooltipsHtml05":"","CNVMouseOverTooltipsPosition":"absolute","CNVMouseOverTooltipsBackgroundColor":"white","CNVMouseOverTooltipsBorderStyle":"solid","CNVMouseOverTooltipsBorderWidth":"1px","CNVMouseOverTooltipsPadding":"3px","CNVMouseOverTooltipsBorderRadius":"3px","CNVMouseOverTooltipsOpacity":0.8},"evals":[],"jsHooks":[]}</script>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 22.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] interacCircos_1.10.0 BioCircos_0.3.4      GenomicRanges_1.52.0
+ [4] GenomeInfoDb_1.36.3  IRanges_2.34.1       S4Vectors_0.38.1    
+ [7] BiocGenerics_0.46.0  gridExtra_2.3        stringr_1.5.0       
+[10] stringi_1.7.12       caret_6.0-94         lattice_0.21-8      
+[13] ggplot2_3.4.2       
+
+loaded via a namespace (and not attached):
+ [1] bitops_1.0-7            pROC_1.18.4             rlang_1.1.1            
+ [4] magrittr_2.0.3          git2r_0.32.0            compiler_4.3.1         
+ [7] vctrs_0.6.3             reshape2_1.4.4          pkgconfig_2.0.3        
+[10] fastmap_1.1.1           XVector_0.40.0          ellipsis_0.3.2         
+[13] labeling_0.4.3          utf8_1.2.3              promises_1.2.1         
+[16] rmarkdown_2.24          prodlim_2023.08.28      purrr_1.0.2            
+[19] xfun_0.40               zlibbioc_1.46.0         cachem_1.0.8           
+[22] jsonlite_1.8.7          recipes_1.0.8           highr_0.10             
+[25] later_1.3.1             parallel_4.3.1          R6_2.5.1               
+[28] bslib_0.5.1             RColorBrewer_1.1-3      parallelly_1.36.0      
+[31] rpart_4.1.19            lubridate_1.9.2         jquerylib_0.1.4        
+[34] Rcpp_1.0.11             iterators_1.0.14        knitr_1.44             
+[37] future.apply_1.11.0     httpuv_1.6.11           Matrix_1.5-3           
+[40] splines_4.3.1           nnet_7.3-19             timechange_0.2.0       
+[43] tidyselect_1.2.0        rstudioapi_0.15.0       yaml_2.3.7             
+[46] timeDate_4022.108       codetools_0.2-19        listenv_0.9.0          
+[49] tibble_3.2.1            plyr_1.8.8              withr_2.5.0            
+[52] evaluate_0.21           future_1.33.0           survival_3.5-5         
+[55] pillar_1.9.0            whisker_0.4.1           foreach_1.5.2          
+[58] generics_0.1.3          rprojroot_2.0.3         RCurl_1.98-1.12        
+[61] munsell_0.5.0           scales_1.2.1            globals_0.16.2         
+[64] class_7.3-22            glue_1.6.2              tools_4.3.1            
+[67] data.table_1.14.8       ModelMetrics_1.2.2.2    gower_1.0.1            
+[70] fs_1.6.3                grid_4.3.1              ipred_0.9-14           
+[73] colorspace_2.1-0        nlme_3.1-162            GenomeInfoDbData_1.2.10
+[76] cli_3.6.1               workflowr_1.7.1         fansi_1.0.4            
+[79] lava_1.7.2.1            dplyr_1.1.3             gtable_0.3.4           
+[82] sass_0.4.7              digest_0.6.33           htmlwidgets_1.6.2      
+[85] farver_2.1.1            htmltools_0.5.6         lifecycle_1.0.3        
+[88] hardhat_1.3.0           MASS_7.3-60            </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
