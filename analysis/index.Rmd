@@ -10,6 +10,7 @@ editor_options:
 
 This  website contains copy number variation analysis for the project in collaboration with G. Pelicci group
 
-# AML patients from Chiara
+# Shallow sequencing 
 
 - [1-Exploratory analysis low pass WGS tumor vs plasma](00_exploratory_analysis.html)
+- [2-Differential analysis using (likely) Pathogenic CNV](01_cancer_related_region.html)
